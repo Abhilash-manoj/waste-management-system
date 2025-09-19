@@ -214,7 +214,7 @@
               <p><strong>Status:</strong> ${req.Status}</p>
               <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>
               <button class="accept" onclick="acceptTask('${req.Request_ID}')">Accept Request</button>
-              <button class="reject" onclick="requestReassignment('Accepted', '${req.Request_ID}', ${req.Worker_ID})">Request Reassignment</button>
+              <button class="reject" onclick="requestReassignment('Pending Assignment', '${req.Request_ID}', ${req.Worker_ID})">Request Reassignment</button>
             `;
             grid.appendChild(card);
           }
