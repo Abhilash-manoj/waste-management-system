@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color:#D6FFC3;
+    }
+    .sidebar {
+      width: 250px;
+      background-color:#04640A;
+      color: white;
+      position: fixed;
+      height: 100%;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .sidebar a:hover {
+      background-color:rgb(2, 65, 6);
+    }
+    .main {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      color:rgb(3, 44, 5);
+    }
+    .request-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .request-card {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      border: black 1px solid;
+    }
+    .request-card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .admin-profile-pic{
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .admin-profile-pic:hover{
+      width: 110px;
+      height: 110px;
+      transition: all 0.2s ease;
+    }
+    .admin-profile{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .thin-green-line{
+      width: 100%;
+      height: 5px;
+      background-color:#149703;
+      margin: 0px 0;
+    }
+    /* Modal (worker popup) */
+    #worker-popup {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.6);
+      justify-content:center;
+      align-items:center;
+    }
+    #worker-popup > div {
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      max-width:500px;
+      width:90%;
+    }
+    .assign {
+      color: white;
+      background-color:lightskyblue;
+      border-radius:10px;
+      border: solid lightskyblue;
+      width:100px;
+      height:40px;
+    }
+    .accept {
+      color: white;
+      background-color:Green;
+      border-radius:10px;
+      border: solid green;
+      width:100px;
+      height:40px;
+    }
+    .reject {
+      color: white;
+      background-color:Red;
+      border-radius:10px;
+      border: solid Red;
+      width:100px;
+      height:40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="admin-profile">
+      <h2>Dashboard</h2>
+      <img src="/images/blank-profile-picture.webp" class="admin-profile-pic" alt="Admin Profile Picture">
+      <h3>Worker1</h3>
+    </div>
+    <div class="thin-green-line"></div>
+    <div class="main-menu">
+      <a href="/worker/workerdashboard">Home</a>
+    </div>
+    <div class="thin-green-line"></div>
+    <div class="sub-menu">
+      <a onclick="loadPendingWasteRequests(); showForm('PendingRequests')"> View Pending Requests</a>
+      <a onclick="loadAcceptedWasteRequests(); showForm('AcceptedRequests')"> View Accepted Requests</a>
+      <a href="/logout">Log Out</a>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- View Pending Requests -->
+    <div id="view-pending-requests-form" style="display:none; margin-top:20px;">
+      <div class="header"><h2>View Pending Requests</h2></div>
+      <div id="view-pending-requests"></div>
+    </div>
+
+    <!-- View Accepted Requests -->
+    <div id="view-accepted-requests-form" style="display:none; margin-top:20px;">
+      <div class="header"><h2>View Accepted Requests</h2></div>
+      <div id="view-accepted-requests"></div>
+    </div>
+
+    <!-- Worker Popup -->
+    <div id="worker-popup">
+      <div>
+        <h3>Select a Worker</h3>
+        <div id="worker-list"></div>
+        <button onclick="closeWorkerPopup()" style="margin-top:10px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showForm(type) {
+      document.getElementById("view-pending-requests-form").style.display = type === "PendingRequests" ? "block" : "none";
+
+      document.getElementById("view-accepted-requests-form").style.display = type === "AcceptedRequests" ? "block" : "none";
+    }
+
+
+    async function loadPendingWasteRequests() {
+      const container = document.getElementById("view-pending-requests");
+      container.innerHTML = "<p>⏳ Loading waste requests...</p>";
+      try {
+        const res = await fetch("/worker/view-requests");
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const json = await res.json();
+        const requests = json.data || [];
+        if (!requests.length) {
+          container.innerHTML = "<p>No pending requests found.</p>";
+          return;
+        }
+        const grid = document.createElement("div");
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(350px, 1fr))";
+        grid.style.gap = "15px";
+        grid.style.marginTop = "20px";
+
+        requests.forEach(req => {
+          if (req.Status === "Assigned") {
+            const card = document.createElement("div");
+            card.style.background = "#fff";
+            card.style.border = "1px solid #ddd";
+            card.style.borderRadius = "10px";
+            card.style.padding = "15px";
+            card.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
+            card.style.transition = "transform 0.2s ease, box-shadow 0.2s ease";
+            card.innerHTML = `
+              <h3 style="margin:0; color:#04640A;">Request #${req.Request_ID}</h3>
+              <p><strong>Member:</strong> ${req.MemberName || "Unknown"}</p>
+              <p><strong>House:</strong> ${req.HouseNumber || "N/A"} | <strong>Ward:</strong> ${req.WardNumber || "N/A"}</p>
+              <p><strong>Waste Type:</strong> ${req.WasteType}</p>
+              <p><strong>Status:</strong> ${req.Status}</p>
+              <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>
+              <button class="accept" onclick="acceptTask('${req.Request_ID}')">Accept Request</button>
+              <button class="reject" onclick="requestReassignment('Accepted', '${req.Request_ID}', ${req.Worker_ID})">Request Reassignment</button>
+            `;
+            grid.appendChild(card);
+          }
+        });
+        container.innerHTML = "";
+        container.appendChild(grid);
+      } catch (err) {
+        console.error("Error loading pending requests:", err);
+        container.innerHTML = `<p style="color:red;">Failed to load pending requests.</p>`;
+      }
+    }
+
+
+     async function loadAcceptedWasteRequests() {
+      const container = document.getElementById("view-accepted-requests");
+      container.innerHTML = "<p>⏳ Loading waste requests...</p>";
+      try {
+        const res = await fetch("/worker/view-requests");
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const json = await res.json();
+        const requests = json.data || [];
+        if (!requests.length) {
+          container.innerHTML = "<p>No Accepted requests found.</p>";
+          return;
+        }
+        const grid = document.createElement("div");
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(350px, 1fr))";
+        grid.style.gap = "15px";
+        grid.style.marginTop = "20px";
+
+        requests.forEach(req => {
+          if (req.Status === "Accepted") {
+            const card = document.createElement("div");
+            card.style.background = "#fff";
+            card.style.border = "1px solid #ddd";
+            card.style.borderRadius = "10px";
+            card.style.padding = "15px";
+            card.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
+            card.style.transition = "transform 0.2s ease, box-shadow 0.2s ease";
+            card.innerHTML = `
+              <h3 style="margin:0; color:#04640A;">Request #${req.Request_ID}</h3>
+              <p><strong>Member:</strong> ${req.MemberName || "Unknown"}</p>
+              <p><strong>House:</strong> ${req.HouseNumber || "N/A"} | <strong>Ward:</strong> ${req.WardNumber || "N/A"}</p>
+              <p><strong>Waste Type:</strong> ${req.WasteType}</p>
+              <p><strong>Status:</strong> ${req.Status}</p>
+              <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>
+              <button class="accept" onclick="completeTask('Completed', '${req.Request_ID}', ${req.Worker_ID})">Complete Task</button>
+            `;
+            grid.appendChild(card);
+          }
+        });
+        container.innerHTML = "";
+        container.appendChild(grid);
+      } catch (err) {
+        console.error("Error loading pending requests:", err);
+        container.innerHTML = `<p style="color:red;">Failed to load pending requests.</p>`;
+      }
+    }
+
+
+    async function requestReassignment(newStatus, requestId, workerId) {
+      try {
+        const res = await fetch("/worker/reassign-worker", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newStatus, requestId, workerId })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`Requested reassignment successfully!`);
+          location.reload();
+        } else {
+          alert("Failed to request reassignment.");
+        }
+      } catch (err) {
+        console.error("Error requesting reassignment:", err);
+        alert("Error requesting reassignment.");
+      }
+    }
+
+// Accept Task - Fetch available dates and show popup
+async function acceptTask(requestId) {
+  try {
+    console.log("📩 Accept task for request ID:", requestId);
+
+    // 1️⃣ Fetch start & end date from backend
+    const res = await fetch("/worker/get-dates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestId })
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+    // Parse correct structure
+    const result = await res.json();
+    if (!result.success || !result.data || result.data.length === 0) {
+      alert("No dates found for this request.");
+      return;
+    }
+
+  
+    const { PreferredDateStart, PreferredDateEnd } = result.data[0];
+
+  
+    const startDate = new Date(PreferredDateStart);
+    const endDate = new Date(PreferredDateEnd);
+
+   startDate.setDate(startDate.getDate() + 1);
+   endDate.setDate(endDate.getDate() + 1);
+
+    const dateList = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      dateList.push(new Date(d));
+    }
+
+  
+    const modal = document.createElement("div");
+    modal.style.cssText =
+      "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000;";
+
+    const popup = document.createElement("div");
+    popup.style.cssText =
+      "background:white;padding:20px;border-radius:10px;width:350px;box-shadow:0 2px 10px rgba(0,0,0,0.3);";
+    popup.innerHTML = `<h3>Select Task Date</h3>`;
+
+    const list = document.createElement("div");
+    list.style.marginTop = "10px";
+
+    if (dateList.length === 0) {
+      list.innerHTML = "<p>No available dates.</p>";
+    } else {
+      dateList.forEach(date => {
+        const formattedDate = date.toISOString().split("T")[0]; 
+        const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.justifyContent = "space-between";
+        div.style.marginBottom = "8px";
+        div.innerHTML = `
+          <span>${formattedDate}</span>
+          <button onclick="confirmTaskDate('${formattedDate}', '${requestId}')">Select</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    popup.appendChild(list);
+
+    // Close button
+    const closeBtn = document.createElement("button");
+    closeBtn.innerText = "Close";
+    closeBtn.style.marginTop = "10px";
+    closeBtn.onclick = () => modal.remove();
+    popup.appendChild(closeBtn);
+
+    modal.appendChild(popup);
+    document.body.appendChild(modal);
+  } catch (err) {
+    console.error("❌ Error fetching dates:", err);
+    alert("Failed to fetch task dates. Try again.");
+  }
+}
+
+
+//  Function to send selected date to backend
+async function confirmTaskDate(selectedDate, requestId) {
+  try {
+    console.log(`✅ Selected Date: ${selectedDate} for Request ID: ${requestId}`);
+    const res = await fetch("/worker/accept-task", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ selectedDate, requestId })
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    alert("✅ Task date updated successfully!");
+    location.reload(); // refresh page to reflect changes
+  } catch (err) {
+    console.error("❌ Error updating date:", err);
+    alert("Failed to update date. Try again.");
+  }
+}
+
+    async function completeTask(newStatus, requestId, workerId) {
+      if (!confirm("Are you sure you want to complete this task?")) return;
+      try {
+        const res = await fetch("/worker/complete-task", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newStatus, requestId, workerId })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || "Server error");
+        alert("Request accepted!");
+        loadPendingWasteRequests();
+      } catch (err) {
+        alert("Failed to accept request");
+        console.error(err);
+      }
+    }
+    
+  </script>
+</body>
+</html>
