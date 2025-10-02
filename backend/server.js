@@ -1,49 +1,54 @@
 import express from "express";
 import path from "path";
-import adminRoutes from "./routes/adminRoutes.js";
-import workerRoutes from "./routes/workerRoutes.js";
-import memberRoutes from "./routes/memberRoutes.js";
-import loadUsers from "./middlewares/loadUsers.js";
+import { fileURLToPath } from "url";
 import session from "express-session";
 import flash from "connect-flash";
 import dotenv from "dotenv";
+
+import adminRoutes from "./routes/adminLoginRoutes.js";
+import memberRoutes from "./routes/memberLoginRoutes.js";
+import workerRoutes from "./routes/workerLoginRoutes.js";
+import loadUsers from "./middlewares/loadUsers.js";
+
 dotenv.config();
 
 const app = express();
 
+// ✅ Resolve __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Middleware for parsing request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Session setup
 app.use(session({
-  secret: process.env.SESSION_KEY,   // ⚠️ change this to something strong
+  secret: process.env.SESSION_KEY || "your_super_secret_key",
   resave: false,
   saveUninitialized: true
 }));
 
-// ✅ Flash setup
+// ✅ Flash messages
 app.use(flash());
 
-
-// Set EJS as view engine
+// ✅ View engine setup
 app.set("view engine", "ejs");
-app.set("views", path.join(process.cwd(), ".." , "frontend", "views"));
-console.log("Views directory:", app.get("views"));
+app.set("views", path.join(__dirname, "..", "frontend", "views"));
+console.log("✅ Views directory:", app.get("views"));
 
-// Serve static files (CSS, JS, images)
-app.use("/components", express.static(path.join(process.cwd(), "frontend", "components")));
+// ✅ Static assets
+app.use("/components", express.static(path.join(__dirname, "..", "frontend", "components")));
 
+// ✅ Admin middleware
+app.use("/admin", loadUsers);
 
-//This middleware runs for all /admin routes
-app.use(loadUsers);
-
-// route for admin dashboard
+// ✅ Route registration
 app.use("/admin", adminRoutes);
-
-// route for member dashboard
 app.use("/member", memberRoutes);
-
-// route for worker dashboard
 app.use("/worker", workerRoutes);
 
-app.listen(5000, () => console.log("✅ Server running on http://localhost:5000"));
+// ✅ Start server
+app.listen(5000, () => {
+  console.log("✅ Server running at http://localhost:5000");
+});

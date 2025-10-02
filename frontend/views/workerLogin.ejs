@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Worker Login</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-image: url("/components/workerlogin.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-color: #DFF1F1;
+    }
+
+    .left-section {
+      flex: 1;
+      color: black;
+      padding: 50px;
+    }
+
+    .left-section h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .left-section p {
+      font-size: 1rem;
+      max-width: 400px;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .forgot {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: rgb(18, 175, 248);
+      text-decoration: none;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 10px;
+      background: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background: #2e7d32;
+    }
+
+    .back {
+      position: absolute;
+      text-decoration: none;
+      color: rgb(12, 12, 12);
+      font-weight: bold;
+      top: 20px;
+      left: 20px;
+      font-size: 35px;
+    }
+  </style>
+</head>
+<body>
+  <div class="left-section">
+    <h1>Haritha Keralam Mission</h1>
+    <p>Growth requires adaptation, and those who refuse to evolve remain stagnant</p>
+  </div>
+
+  <div class="container">
+    <form class="login-card" id="workerLoginForm" action="/worker/login" method="POST">
+      <a href="/home" class="back">&lArr;</a>
+      <h1>Log In</h1>
+      <h2>Worker</h2>
+
+      <div class="input-group">
+        <label for="workerid">Worker ID</label>
+        <input type="text" name="workerid" id="workerid" placeholder="Enter WorkerID" required />
+      </div>
+
+      <div class="input-group">
+        <label for="wardnumber">Ward Number</label>
+        <input type="text" name="wardnumber" id="wardnumber" placeholder="Enter WardNumber" required />
+      </div>
+
+      <div class="input-group">
+        <label for="pass">Password</label>
+        <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+      </div>
+
+      <a class="forgot" href="/workerforgotpassword">Forgot Password</a>
+      <button type="submit" class="login-btn">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    class LoginValidator {
+      constructor(formId) {
+        this.form = document.getElementById(formId);
+        this.workerInput = document.getElementById('workerid');
+        this.wardInput = document.getElementById('wardnumber');
+        this.passInput = document.getElementById('pass');
+        this.attachEvents();
+      }
+
+      attachEvents() {
+        this.form.addEventListener('submit', (e) => this.validateForm(e));
+      }
+
+      validateForm(e) {
+        const worker = this.workerInput.value.trim();
+        const ward = this.wardInput.value.trim();
+        const pass = this.passInput.value.trim();
+        let errors = [];
+
+        if (!worker.match(/^[A-Za-z0-9\-\/]+$/)) {
+          errors.push("Worker ID contains invalid characters.");
+        }
+
+        if (!ward.match(/^\d+$/)) {
+          errors.push("Ward Number must be numeric.");
+        }
+
+        const hasLower = /[a-z]/.test(pass);
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
+        const isLongEnough = pass.length >= 6;
+
+        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
+          errors.push("Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character.");
+        }
+
+        if (errors.length > 0) {
+          e.preventDefault();
+          alert(errors.join("\\n"));
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      new LoginValidator('workerLoginForm');
+    });
+  </script>
+</body>
+</html>

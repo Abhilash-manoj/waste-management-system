@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-image: url("/components/adminlogin.webp");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-color: #FAFBF8;
+    }
+
+    .left-section {
+      flex: 1;
+      color: black;
+      padding: 50px;
+    }
+
+    .left-section h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .left-section p {
+      font-size: 1rem;
+      max-width: 400px;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-card h1,
+    .login-card h2 {
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 10px;
+      background: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background: #2e7d32;
+    }
+
+    .back {
+      position: absolute;
+      text-decoration: none;
+      color: rgb(12, 12, 12);
+      font-weight: bold;
+      top: 20px;
+      left: 20px;
+      font-size: 35px;
+    }
+  </style>
+</head>
+<body>
+  <div class="left-section">
+    <h1>Haritha Keralam Mission</h1>
+    <p>The mind that welcomes new ideas opens the door to endless possibilities.</p>
+  </div>
+
+  <div class="container">
+    <form class="login-card" id="adminLoginForm" action="/adminlogin" method="POST">
+      <a href="/home" class="back">&lArr;</a>
+      <h1>Log In</h1>
+      <h2>Admin</h2>
+
+      <div class="input-group">
+        <label for="adminid">Admin ID</label>
+        <input type="text" name="admin" id="adminid" placeholder="Enter Admin ID" required />
+      </div>
+
+      <div class="input-group">
+        <label for="pass">Password</label>
+        <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+      </div>
+
+      <button type="submit" class="login-btn" name="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    class AdminLogin {
+      constructor(formId) {
+        this.form = document.getElementById(formId);
+        this.adminInput = document.getElementById('adminid');
+        this.passInput = document.getElementById('pass');
+        this.attachEvents();
+      }
+
+      attachEvents() {
+        if (!this.form) return;
+        this.form.addEventListener('submit', (e) => {
+          const isValid = this.validateInputs();
+          if (!isValid) {
+            e.preventDefault();
+            alert('❌ Admin ID cannot be empty and password must be at least 6 characters.');
+          }
+        });
+      }
+
+      validateInputs() {
+        const adminId = this.adminInput.value.trim();
+        const password = this.passInput.value.trim();
+        const isAdminValid = adminId.length > 0;
+        const isPasswordValid = password.length >= 6;
+        return isAdminValid && isPasswordValid;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      new AdminLogin('adminLoginForm');
+    });
+  </script>
+</body>
+</html>
