@@ -5,9 +5,9 @@ import session from "express-session";
 import flash from "connect-flash";
 import dotenv from "dotenv";
 
-import adminRoutes from "./routes/adminLoginRoutes.js";
-import memberRoutes from "./routes/memberLoginRoutes.js";
-import workerRoutes from "./routes/workerLoginRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import memberRoutes from "./routes/memberRoutes.js";
+import workerRoutes from "./routes/workerRoutes.js";
 import loadUsers from "./middlewares/loadUsers.js";
 
 dotenv.config();

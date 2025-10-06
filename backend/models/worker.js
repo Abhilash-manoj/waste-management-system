@@ -1,10 +1,37 @@
+
 import User from "./user.js";
 import Database from "./database.js";
+import bcrypt from "bcrypt";
 
 export default class Worker extends User {
     constructor(id, name, email, password, profilePicture, taskCount = 0) {
         super(id, name, email, password, profilePicture, "Worker");
         this.taskCount = taskCount;
+    }
+
+    // Find a worker by WorkerID
+    static async findByWorkerId(workerId) {
+        const sql = `SELECT * FROM worker WHERE WorkerID = ?`;
+        const rows = await Database.query(sql, [workerId]);
+        return rows[0];
+    }
+
+    // Verify password using bcrypt
+    static async verifyPassword(inputPassword, storedHash) {
+        return bcrypt.compare(inputPassword, storedHash);
+    }
+
+    // Hash password using bcrypt
+    static async hashPassword(plainPassword) {
+        const saltRounds = 10;
+        return bcrypt.hash(plainPassword, saltRounds);
+    }
+
+    // Insert a new worker
+    static async insertWorker(workerId, wardNumber, plainPassword) {
+        const hashedPassword = await this.hashPassword(plainPassword);
+        const sql = `INSERT INTO worker (WorkerID, WardNumber, Password) VALUES (?, ?, ?)`;
+        await Database.insert(sql, [workerId, wardNumber, hashedPassword]);
     }
 
 

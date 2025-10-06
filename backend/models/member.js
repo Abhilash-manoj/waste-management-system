@@ -1,11 +1,38 @@
+
 import User from "./user.js";
 import Database from "./database.js";
+import bcrypt from "bcrypt";
 
 export default class Member extends User {
     constructor(id, name, email, password, profilePicture, houseNumber, wardNumber) {
         super(id, name, email, password, profilePicture, "Member");
         this.houseNumber = houseNumber;
         this.wardNumber = wardNumber;
+    }
+
+    // Find a member by house number
+    static async findByHouseNumber(houseNumber) {
+        const sql = `SELECT * FROM member WHERE HouseNumber = ?`;
+        const rows = await Database.query(sql, [houseNumber]);
+        return rows[0];
+    }
+
+    // Verify password using bcrypt
+    static async verifyPassword(inputPassword, storedHash) {
+        return bcrypt.compare(inputPassword, storedHash);
+    }
+
+    // Hash password using bcrypt
+    static async hashPassword(plainPassword) {
+        const saltRounds = 10;
+        return bcrypt.hash(plainPassword, saltRounds);
+    }
+
+    // Insert a new member
+    static async insertMember(houseNumber, wardNumber, plainPassword) {
+        const hashedPassword = await this.hashPassword(plainPassword);
+        const sql = `INSERT INTO member (HouseNumber, WardNumber, Password) VALUES (?, ?, ?)`;
+        await Database.insert(sql, [houseNumber, wardNumber, hashedPassword]);
     }
 
     submitWasteRequest(Member_ID, WasteType, HouseNumber, WardNumber, PreferredDateStart, PreferredDateEnd) {

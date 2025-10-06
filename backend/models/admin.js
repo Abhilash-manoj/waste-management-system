@@ -1,4 +1,5 @@
 
+
 import Database from "./database.js";
 
 
@@ -8,6 +9,13 @@ export default class Admin {
         this.id = id;
         this.email = email;
         this.password = password;  // in real project, hash this
+    }
+
+    // Find an admin by AdminID
+    static async findByAdminId(adminId) {
+        const sql = 'SELECT * FROM admin WHERE AdminID = ?';
+        const rows = await Database.query(sql, [adminId]);
+        return rows[0];
     }
  // ➤ Add a new user with role handling
     async addUser(name, email, password, role, profilePicture = null, extra = {}) {
