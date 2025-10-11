@@ -1,7 +1,6 @@
 import express from "express";
-import { addUser, deleteUser, showDashboard, viewUsers, viewFeedback, viewRequests, acceptRequest, confirmAssign } from "../controllers/adminController.js";
 import Admin from '../models/admin.js';
-import AdminController from '../controllers/adminLoginController.js';
+import AdminController from '../controllers/adminController.js';
 
 const router = express.Router();
 const adminModel = Admin;
@@ -12,28 +11,24 @@ router.get('/adminlogin', (req, res) => adminController.renderLoginPage(req, res
 router.post('/adminlogin', (req, res) => adminController.login(req, res));
 router.get('/admindashboard', (req, res) => adminController.renderDashboard(req, res));
 
-// GET Admin Dashboard (renders page)
-router.get("/admindashboard-old", showDashboard); // keep old dashboard route if needed
+// Dashboard
+router.get("/dashboard", (req, res) => adminController.showDashboard(req, res));
 
-// POST Add User (form submit)
-router.post("/add-user", addUser);
+// Users
+router.post("/adduser", (req, res) => {
+  console.log(" /admin/adduser hit");
+  console.log(" Raw body:", req.body);adminController.addUser(req, res);});
+  
+router.delete("/deleteuser", (req, res) => adminController.deleteUser(req, res));
+router.get("/viewusers", (req, res) => adminController.viewUsers(req, res));
 
-// POST Delete User (form submit)
-router.post("/delete-user", deleteUser);
+// Feedback
+router.get("/viewfeedback", (req, res) => adminController.viewFeedback(req, res));
 
-// POST update status (form submit)
-router.post("/accept-request", acceptRequest);
+// Requests
+router.get("/viewrequests", (req, res) => adminController.viewRequests(req, res));
+router.post("/rejectrequest", (req, res) => adminController.rejectRequest(req, res));
+router.post("/assignworker", (req, res) => adminController.confirmAssign(req, res));
 
-//Asign worker to request
-router.post("/assign-worker", confirmAssign);
-
-// View all users
-router.get("/view-users", viewUsers);
-
-// View all feedback
-router.get("/view-feedback", viewFeedback);
-
-// View all feedback
-router.get("/view-requests", viewRequests);
 
 export default router;

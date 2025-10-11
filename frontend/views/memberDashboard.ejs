@@ -221,7 +221,7 @@
         <div class="admin-profile">
             <h2>Dashboard</h2>
             <img src="/images/blank-profile-picture.webp" class="admin-profile-pic" alt="member Profile Picture">
-            <h3>member1</h3>
+            <h3><%= session.member.name %></h3>
         </div>
         <div class="thin-green-line"></div>
         <div class="main-menu">
@@ -233,35 +233,33 @@
             <a onclick="showForm('submitfeedback')"> Submit Feedback</a>
             <a onclick="loadWasteRequests(); showForm('Requests')">View Requests</a>
             <a onclick="loadFeedback(); onclick=showForm('viewfeedback')"> View Feedback</a>
-            <a href="/home.ejs">Log Out</a>
+            <a href="/home">Log Out</a>
         </div>
     </div>
 
     <div class="main">
 
-<% if (success && success.length > 0) { %>
-  <p style="color:green"><%= success[0] %></p>
-<% } %>
-<% if (error && error.length > 0) { %>
-  <p style="color:red"><%= error[0] %></p>
-<% } %>
 
-
-        <!-- Submit Request Form -->
+            <!-- Submit Request Form -->
   <div id="submit-request-form" style="display:none; margin-top:20px;">
     <div class="header">
             <h2>Submit Request</h2>
         </div>
 
-    <form action="/member/submit-request" method="POST">
-      <label>Member ID:</label><br>
-      <input type="text" name="memberId" required><br><br>
+    <form action="/member/submitrequest" method="POST">
 
-      <label>wardNumber:</label><br>
-      <input type="number" name="wardNumber" required><br><br>
+     <input type="hidden" name="memberId" 
+       value="<%= session.member.id %>">
 
-      <label>houseNumber:</label><br>
-      <input type="text" name="houseNumber" required><br><br>
+    <label>House Number:</label><br>
+    <input type="text" name="houseNumber" 
+           value="<%= session.member.houseNumber %>" 
+           readonly><br><br>
+
+    <label>Ward Number:</label><br>
+    <input type="text" name="wardNumber" 
+           value="<%= session.member.wardNumber %>" 
+           readonly><br><br>
 
       <label>Waste Type:</label><br>
       <select name="wasteType" required>
@@ -285,26 +283,36 @@
     </form>
   </div>
 
-  <!-- Submit Feedback Form -->
-  <div id="submit-feedback-form" style="display:none; margin-top:20px;">
-       <div class="header">
-            <h2>Submit Feedback</h2>
-        </div>
-    <form action="/member/submit-feedback" method="POST">
-      <label>Member ID:</label><br>
-      <input type="text" name="memberId" required><br><br>
-
-       <label>Date:</label><br>
-      <input type="date" name="datesubmitted" required><br><br>
-
-      <label>Comment:</label><br>
-      <textarea name="comment" required></textarea><br><br>
-
-      <button type="submit" class="accept">Submit Feedback</button>
-    </form>
+<!-- Submit Feedback Form -->
+<div id="submit-feedback-form" style="display:none; margin-top:20px;">
+  <div class="header">
+    <h2>Submit Feedback</h2>
   </div>
-    </form>
 
+  <form action="/member/submitfeedback" method="POST">
+
+    <input type="hidden" name="memberId" 
+       value="<%= session.member.id %>">
+
+    <label>House Number:</label><br>
+    <input type="text" name="houseNumber" 
+           value="<%= session.member.houseNumber %>" 
+           readonly><br><br>
+
+    <label>Ward Number:</label><br>
+    <input type="text" name="wardNumber" 
+           value="<%= session.member.wardNumber %>" 
+           readonly><br><br>
+
+    <label>Date:</label><br>
+    <input type="date" name="datesubmitted" required><br><br>
+
+    <label>Comment:</label><br>
+    <textarea name="comment" required></textarea><br><br>
+
+    <button type="submit" class="accept">Submit Feedback</button>
+  </form>
+</div>
 
             <!-- View Feedback -->
   <div id="view-feedback-form" style="display:none; margin-top:20px;">
@@ -339,14 +347,13 @@
   }
 
 
-
 // view feedback
 async function loadFeedback() {
   const container = document.getElementById("view-feedback");
   container.innerHTML = "<p>⏳ Loading feedback...</p>";
 
   try {
-    const res = await fetch("/member/view-feedback");
+    const res = await fetch("/member/viewfeedback");
     if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
     const { data: feedback } = await res.json();
@@ -403,7 +410,7 @@ async function loadWasteRequests() {
       const container = document.getElementById("view-requests");
       container.innerHTML = "<p>⏳ Loading waste requests...</p>";
       try {
-        const res = await fetch("/admin/view-requests");
+        const res = await fetch("/member/viewrequests");
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const json = await res.json();
         const requests = json.data || [];

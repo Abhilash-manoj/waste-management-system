@@ -130,43 +130,64 @@
       <a onclick="loadFeedback(); showForm('Feedback')">View Feedback</a>
       <a onclick="loadWasteRequests(); showForm('Requests')">View Requests</a>
       <a onclick="loadPendingWasteRequests(); showForm('PendingRequests')">View Pending Requests</a>
-      <a href="/logout">Log Out</a>
+      <a href="/home">Log Out</a>
     </div>
   </div>
 
   <div class="main">
-    <!-- Add User Form -->
-    <div id="add-user-form" style="display:none; margin-top:20px;">
-      <div class="header"><h2>Add User</h2></div>
-      <form action="/admin/add-user" method="POST">
-        <label>Name:</label><br>
-        <input type="text" name="name" required><br><br>
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
-        <label>Role:</label><br>
-        <select name="role" required>
-          <option value="">--Select--</option>
-          <option value="Member">Member</option>
-          <option value="Worker">Worker</option>
-        </select><br><br>
+  <!-- Add User Section -->
+<div id="add-user-form" style="display:none; margin-top:20px;">
+  <div class="header"><h2>Add User</h2></div>
 
-        <div id="member-fields" style="display:none;">
-          <label>House Number:</label><br>
-          <input type="text" name="houseNumber"><br><br>
-          <label>Ward Number:</label><br>
-          <input type="number" name="wardNumber"><br><br>
-        </div>
+  <!-- Switch Buttons -->
+  <div style="text-align:center; margin-bottom:20px;">
+    <button id="show-worker-form" class="accept">Add Worker</button>
+    <button id="show-member-form" class="accept">Add Member</button>
+  </div>
 
-        <div id="worker-fields" style="display:none;">
-          <label>Ward Number:</label><br>
-          <input type="number" name="wardNumber"><br><br>
-        </div>
+  <!-- Worker Form -->
+  <form id="worker-form" style="display:none;" onsubmit="addUser(event, 'Worker')">
+    <h3>Add Worker</h3>
+    <label>Name:</label><br>
+    <input type="text" id="worker-name" required><br><br>
 
-        <button type="submit" class="accept">Add User</button>
-      </form>
-    </div>
+    <label>Email:</label><br>
+    <input type="email" id="worker-email" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" id="worker-password" required><br><br>
+
+    <label>Ward Number:</label><br>
+    <input type="number" id="worker-ward" required><br><br>
+
+    <label>Phone:</label><br>
+    <input type="text" id="worker-phone" required><br><br>
+
+    <button type="submit" class="accept">Add Worker</button>
+  </form>
+
+  <!-- Member Form -->
+  <form id="member-form" style="display:none;" onsubmit="addUser(event, 'Member')">
+    <h3>Add Member</h3>
+    <label>Name:</label><br>
+    <input type="text" id="member-name" required><br><br>
+
+    <label>House Number:</label><br>
+    <input type="text" id="member-house" required><br><br>
+
+    <label>Ward Number:</label><br>
+    <input type="number" id="member-ward" required><br><br>
+
+    <label>Phone:</label><br>
+    <input type="text" id="member-phone" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" id="member-password" required><br><br>
+
+    <button type="submit" class="accept">Add Member</button>
+  </form>
+</div>
+
 
     <!-- View Users -->
     <div id="view-user-form" style="display:none; margin-top:20px;">
@@ -201,20 +222,68 @@
       document.getElementById("view-requests-form").style.display = type === "Requests" ? "block" : "none";
       document.getElementById("view-pending-requests-form").style.display = type === "PendingRequests" ? "block" : "none";
     }
+// Toggle forms
+  document.getElementById("show-worker-form").addEventListener("click", () => {
+    document.getElementById("worker-form").style.display = "block";
+    document.getElementById("member-form").style.display = "none";
+  });
 
-    const roleSelect = document.querySelector("select[name=role]");
-    if (roleSelect) {
-      roleSelect.addEventListener("change", function () {
-        document.getElementById("member-fields").style.display = this.value === "Member" ? "block" : "none";
-        document.getElementById("worker-fields").style.display = this.value === "Worker" ? "block" : "none";
-      });
+  document.getElementById("show-member-form").addEventListener("click", () => {
+    document.getElementById("member-form").style.display = "block";
+    document.getElementById("worker-form").style.display = "none";
+  });
+
+  // Unified function for adding users
+  async function addUser(e, role) {
+    e.preventDefault();
+
+    let payload = { role };
+
+    if (role === "Worker") {
+      payload.name = document.getElementById("worker-name").value;
+      payload.email = document.getElementById("worker-email").value;
+      payload.password = document.getElementById("worker-password").value;
+      payload.contactInfo = document.getElementById("worker-phone").value; // phone stored in contactInfo
+      payload.extra = {
+        wardNumber: document.getElementById("worker-ward").value
+      };
     }
+
+    if (role === "Member") {
+      payload.name = document.getElementById("member-name").value;
+      payload.password = document.getElementById("member-password").value;
+      payload.contactInfo = document.getElementById("member-phone").value; 
+      payload.extra = {
+        houseNumber: document.getElementById("member-house").value,
+        wardNumber: document.getElementById("member-ward").value
+      };
+    }
+
+    try {
+      const res = await fetch("/admin/adduser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert(`✅ ${role} added successfully!`);
+        e.target.reset();
+      } else {
+        throw new Error(data.message || `Failed to add ${role}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(`❌ Error adding ${role}`);
+    }
+  }
 
     async function deleteUser(userId) {
       if (!confirm("Are you sure you want to delete this user?")) return;
       try {
-        const res = await fetch("/admin/delete-user", {
-          method: "POST",
+        const res = await fetch("/admin/deleteuser", {
+          method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId })
         });
@@ -228,80 +297,127 @@
       }
     }
 
-    async function acceptRequest(newStatus, requestId) {
-      if (!confirm("Are you sure you want to accept this request?")) return;
+    async function rejectRequest(newStatus, requestId) {
+      if (!confirm("Are you sure you want to reject this request?")) return;
       try {
-        const res = await fetch("/admin/accept-request", {
+        const res = await fetch("/admin/rejectrequest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ newStatus, requestId })
         });
         const data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.message || "Server error");
-        alert("Request accepted!");
+        alert("Request rejected!");
         loadPendingWasteRequests();
       } catch (err) {
-        alert("Failed to accept request");
+        alert("Failed to reject request");
         console.error(err);
       }
     }
 
-    async function assignWorker(requestId) {
-      try {
-        console.log("📩 Assign worker for request ID:", requestId);
-         const res = await fetch("/worker/available-workers", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ requestId })
-        });
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        const { data: workers } = await res.json();
+async function assignWorker(requestId) {
+  try {
+    console.log("📩 Assign worker for request ID:", requestId);
 
-        const modal = document.createElement("div");
-        modal.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000;";
+    const res = await fetch("/worker/available-workers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestId }),
+    });
 
-        const popup = document.createElement("div");
-        popup.style.cssText = "background:white;padding:20px;border-radius:10px;width:350px;box-shadow:0 2px 10px rgba(0,0,0,0.3);";
-        popup.innerHTML = `<h3>Assign Worker</h3>`;
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-        const list = document.createElement("div");
-        list.style.marginTop = "10px";
+    const { success, data: workers } = await res.json();
+    if (!success) throw new Error("Failed to fetch workers");
 
-        if (!workers || workers.length === 0) {
-          list.innerHTML = "<p>No available workers right now.</p>";
-        } else {
-          workers.forEach(w => {
-            if ( w.taskAssigned === "no") {
-              const div = document.createElement("div");
-              div.style.display = "flex";
-              div.style.justifyContent = "space-between";
-              div.style.marginBottom = "8px";
-              div.innerHTML = `
-                <span><strong>${w.Worker_Name}</strong> (ID: ${w.Worker_ID})</span>
-                <button onclick="confirmAssign('${w.Worker_ID}', '${requestId}')">Assign</button>
-              `;
-              list.appendChild(div);
-            }
-          });
-        }
+    // Create modal overlay
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    `;
 
-        popup.appendChild(list);
-        const closeBtn = document.createElement("button");
-        closeBtn.innerText = "Close";
-        closeBtn.style.marginTop = "10px";
-        closeBtn.onclick = () => modal.remove();
-        popup.appendChild(closeBtn);
-        modal.appendChild(popup);
-        document.body.appendChild(modal);
-      } catch (err) {
-        console.error("❌ Error loading workers:", err);
-        alert("Failed to load workers. Try again.");
-      }
+    // Create popup container
+    const popup = document.createElement("div");
+    popup.style.cssText = `
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 380px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    `;
+    popup.innerHTML = `<h3> Assign Worker</h3>`;
+
+    const list = document.createElement("div");
+    list.style.marginTop = "10px";
+
+    if (!workers || workers.length === 0) {
+      list.innerHTML = "<p>No available workers right now.</p>";
+    } else {
+      workers.forEach(w => {
+        const div = document.createElement("div");
+        div.style.cssText = `
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+          padding: 6px 8px;
+          border-radius: 5px;
+          background: #f9f9f9;
+        `;
+        div.innerHTML = `
+          <span>
+            <strong>${w.Worker_Name}</strong><br>
+            <small>Ward: ${w.WardNumber}</small>
+          </span>
+          <button style="
+            padding: 4px 10px;
+            border: none;
+            border-radius: 5px;
+            background: #5A32EA;
+            color: white;
+            cursor: pointer;
+          " 
+          onclick="confirmAssign('${w.Worker_ID}', '${requestId}')">Assign</button>
+        `;
+        list.appendChild(div);
+      });
     }
+
+    // Close button
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "Close";
+    closeBtn.style.cssText = `
+      margin-top: 10px;
+      padding: 6px 12px;
+      background: #ccc;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    `;
+    closeBtn.onclick = () => document.body.removeChild(modal);
+
+    popup.appendChild(list);
+    popup.appendChild(closeBtn);
+    modal.appendChild(popup);
+    document.body.appendChild(modal);
+
+  } catch (err) {
+    console.error("❌ Assign worker error:", err);
+    alert("Error fetching workers. Please try again.");
+  }
+}
+
 
     async function confirmAssign(workerId, requestId) {
       try {
-        const res = await fetch("/admin/assign-worker", {
+        const res = await fetch("/admin/assignworker", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ workerId, requestId })
@@ -323,7 +439,7 @@
       const container = document.getElementById("view-user");
       container.innerHTML = "<p>⏳ Loading users...</p>";
       try {
-        const res = await fetch("/admin/view-users");
+        const res = await fetch("/admin/viewusers");
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const { data: users } = await res.json();
         if (!users || users.length === 0) {
@@ -357,7 +473,7 @@
       const container = document.getElementById("view-feedback");
       container.innerHTML = "<p>⏳ Loading feedback...</p>";
       try {
-        const res = await fetch("/admin/view-feedback");
+        const res = await fetch("/admin/viewfeedback");
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const { data: feedback } = await res.json();
         if (!feedback || feedback.length === 0) {
@@ -388,7 +504,7 @@
       const container = document.getElementById("view-requests");
       container.innerHTML = "<p>⏳ Loading waste requests...</p>";
       try {
-        const res = await fetch("/admin/view-requests");
+        const res = await fetch("/admin/viewrequests");
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const json = await res.json();
         const requests = json.data || [];
@@ -422,7 +538,7 @@
       const container = document.getElementById("view-pending-requests");
       container.innerHTML = "<p>⏳ Loading waste requests...</p>";
       try {
-        const res = await fetch("/admin/view-requests");
+        const res = await fetch("/admin/viewrequests");
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const json = await res.json();
         const requests = json.data || [];
@@ -443,9 +559,8 @@
               <p><strong>Waste Type:</strong> ${req.WasteType}</p>
               <p><strong>Status:</strong> ${req.Status}</p>
               <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>
-              ${req.Status === "Pending Assignment"
-                ? `<button class="assign" onclick="assignWorker('${req.Request_ID}')">Assign Worker</button>`
-                : `<button class="accept" onclick="acceptRequest('Pending Assignment', '${req.Request_ID}')">Accept Request</button>`}`;
+              <button class="assign" onclick="assignWorker('${req.Request_ID}')">Assign Worker</button>
+              <button class="reject" onclick="rejectRequest('Rejected', '${req.Request_ID}')">Reject Request</button>`;
             grid.appendChild(card);
           }
         });

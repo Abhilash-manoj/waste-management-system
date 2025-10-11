@@ -1,60 +1,160 @@
 import Member from "../models/member.js";
 import Feedback from "../models/feedback.js";
+import WasteRequest from "../models/wastecollectionrequest.js";
 
-// Render Member Dashboard
-export const showDashboard = (req, res) => {
-  // Send empty arrays for success/error to prevent EJS ReferenceError
-  res.render("memberDashboard", { success: [], error: [] });
-};
-
-// Submit a waste collection request
-export const submitWasteRequest = async (req, res) => {
-  const { memberId, wasteType, houseNumber, wardNumber, preferredDateStart, preferredDateEnd } = req.body;
-
-  try {
-    const member = new Member(1, "SuperAdmin", "admin@example.com", "hashedPass", null, "House 1", "Ward 1");
-
-    const requestId = await member.submitWasteRequest(
-      memberId,
-      wasteType,
-      houseNumber,
-      wardNumber,
-      preferredDateStart,
-      preferredDateEnd
+class MemberController {
+   constructor(memberModel) {
+    this.memberModel = memberModel;
+  }
+  
+  validateInput(houseNumber, wardNumber, password) {
+    const houseRegex = /^[A-Za-z0-9\-\/]+$/;
+    const wardRegex = /^\d+$/;
+    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
+    return (
+      houseRegex.test(houseNumber) &&
+      wardRegex.test(wardNumber) &&
+      passRegex.test(password)
     );
-
-    // Respond with JSON instead of redirect & flash
-    res.json({ success: true, message: `Request submitted with ID: ${requestId}`, requestId });
-  } catch (err) {
-    console.error("Error submitting request:", err.message);
-    res.status(500).json({ success: false, message: "Error submitting request. Try again." });
   }
-};
 
-// Submit feedback
-export const submitFeedback = async (req, res) => {
-  const { memberId, comment, datesubmitted } = req.body;
+  renderLoginPage(req, res) {
+    res.render('memberLogin');
+  }
+
+  async login(req, res) {
+  const { housenumber, wardnumber, pass } = req.body;
+
+  if (!this.validateInput(housenumber, wardnumber, pass)) {
+    return res.render('memberLogin', { error: 'Invalid input format.' });
+  }
 
   try {
-    const feedbackId = await Feedback.submitFeedback(memberId, comment, datesubmitted);
+    const member = await this.memberModel.findByHouseNumber(housenumber);
 
-    // Respond with JSON
-    res.json({ success: true, message: `Feedback submitted with ID: ${feedbackId}`, feedbackId });
+    if (!member || String(member.WardNumber) !== String(wardnumber)) {
+      return res.render('memberLogin', { error: 'Invalid Username and Password!!!' });
+    }
+
+    const isValid = await this.memberModel.verifyPassword(pass, member.Password);
+    if (!isValid) {
+      return res.render('memberLogin', { error: 'Invalid Username and Password!!!' });
+    }
+
+    req.session.member = {
+      id: member.User_ID,
+      name: member.Name,
+      email: member.Email,
+      contactInfo: member.ContactInfo,
+      role: member.Role,
+      houseNumber: member.HouseNumber,
+      wardNumber: member.WardNumber
+    };
+
+    res.redirect('/member/memberdashboard');
   } catch (err) {
-    console.error("Error submitting feedback:", err.message);
-    res.status(500).json({ success: false, message: "Error submitting feedback. Try again." });
+    console.error("❌ Login Error:", err.message);
+    res.status(500).send('Server error');
   }
-};
+}
 
-// View feedback (for member dashboard)
-export const viewFeedback = async (req, res) => {
-  try {
-    const feedback = await Feedback.viewFeedback();
-    console.log("Loaded feedback:", feedback);
 
-    res.json({ success: true, data: feedback });
-  } catch (err) {
-    console.error("Error fetching feedback:", err.message);
-    res.status(500).json({ success: false, message: "Failed to load feedback." });
+  renderDashboard(req, res) {
+    if (!req.session.member) {
+      return res.redirect('/member/memberlogin');
+    }
+
+    res.render('memberDashboard', {
+  session: req.session
+});
   }
-};
+
+  // Render Member Dashboard
+  showDashboard(req, res) {
+    res.render("memberDashboard", { success: [], error: [] });
+  }
+
+  // Submit a waste collection request
+  async submitWasteRequest(req, res) {
+    const { memberId, wasteType, houseNumber, wardNumber, preferredDateStart, preferredDateEnd } = req.body;
+
+    try {
+      const sessionMember = req.session?.member;
+
+      const member = new Member(
+        sessionMember?.id || 1,
+        sessionMember?.name || "SuperAdmin",
+        sessionMember?.email || "admin@example.com",
+        "hashedPass",
+        null,
+        sessionMember?.houseNumber || houseNumber,
+        sessionMember?.wardNumber || wardNumber
+      );
+
+      const requestId = await member.submitWasteRequest(
+        memberId,
+        wasteType,
+        houseNumber,
+        wardNumber,
+        preferredDateStart,
+        preferredDateEnd
+      );
+
+      res.json({ success: true, message: `Request submitted with ID: ${requestId}`, requestId });
+    } catch (err) {
+      console.error("❌ Error submitting request:", err.message);
+      res.status(500).json({ success: false, message: "Error submitting request. Try again." });
+    }
+  }
+
+   async viewRequests(req, res) {
+        try {
+            // Get memberId from session (or hidden field)
+            const memberId = req.session.member?.id;
+
+            if (!memberId) {
+                return res.status(400).json({ error: "Member ID not found in session" });
+            }
+
+            // Call model function to fetch requests
+            const requests = await WasteRequest.viewRequests(memberId, "member");
+
+            return res.status(200).json({ data: requests });
+        } catch (err) {
+            console.error("❌ Error fetching member requests:", err);
+            return res.status(500).json({ error: "Server error" });
+        }
+    }
+
+  // Submit feedback
+  async submitFeedback(req, res) {
+    const { memberId, comment, datesubmitted } = req.body;
+
+    try {
+      const feedbackId = await Feedback.submitFeedback(memberId, comment, datesubmitted);
+
+      res.json({ success: true, message: `Feedback submitted with ID: ${feedbackId}`, feedbackId });
+    } catch (err) {
+      console.error("❌ Error submitting feedback:", err.message);
+      res.status(500).json({ success: false, message: "Error submitting feedback. Try again." });
+    }
+  }
+
+  
+
+  // View feedback (for member dashboard)
+  async viewFeedback(req, res) {
+    try {
+      const memberId = req.session.member?.id;
+      const feedback = await Feedback.viewFeedback(memberId);
+      console.log("Loaded feedback:", feedback);
+
+      res.json({ success: true, data: feedback });
+    } catch (err) {
+      console.error("❌ Error fetching feedback:", err.message);
+      res.status(500).json({ success: false, message: "Failed to load feedback." });
+    }
+  }
+}
+
+export default MemberController;

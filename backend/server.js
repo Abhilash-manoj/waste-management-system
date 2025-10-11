@@ -43,6 +43,23 @@ app.use("/components", express.static(path.join(__dirname, "..", "frontend", "co
 // ✅ Admin middleware
 app.use("/admin", loadUsers);
 
+console.log("✅ Views directory:", app.get("views"));
+
+
+app.get("/home", (req, res) => {
+  console.log("🔥 /home route hit");
+  res.render("home");
+});
+
+
+app.get("/aboutus", (req, res) => {
+  res.render("aboutus");
+});
+
+app.get("/contact", (req, res) => {
+  res.render("contact");
+});
+
 // ✅ Route registration
 app.use("/admin", adminRoutes);
 app.use("/member", memberRoutes);

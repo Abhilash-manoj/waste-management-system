@@ -1,5 +1,4 @@
-
-
+import bcrypt from "bcrypt";
 import Database from "./database.js";
 
 
@@ -13,34 +12,51 @@ export default class Admin {
 
     // Find an admin by AdminID
     static async findByAdminId(adminId) {
-        const sql = 'SELECT * FROM admin WHERE AdminID = ?';
+        const sql = 'SELECT * FROM admin WHERE Admin_ID = ?';
         const rows = await Database.query(sql, [adminId]);
         return rows[0];
     }
  // ➤ Add a new user with role handling
-    async addUser(name, email, password, role, profilePicture = null, extra = {}) {
-        const sqlUser = `INSERT INTO User (Name, Email, Password, Role, ProfilePicture) 
+
+async addUser(name, email, password, role, contactInfo, extra = {}) {
+    try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Insert into User table
+        const sqlUser = `INSERT INTO User (Name, Email, Password, ContactInfo, Role) 
                          VALUES (?, ?, ?, ?, ?)`;
-        const paramsUser = [name, email, password, role, profilePicture];
+        const paramsUser = [name, email, hashedPassword, contactInfo, role];
         const userId = await Database.insert(sqlUser, paramsUser);
 
+        console.log(`Added ${role} user with ID:`, userId);
+
+        // Insert into role-specific tables
         if (role === "Member") {
+            const wardNumber = extra?.wardNumber || null;
+            const houseNumber = extra?.houseNumber || null;
             const sqlMember = `INSERT INTO Member (Member_ID, HouseNumber, WardNumber) 
                                VALUES (?, ?, ?)`;
-            const paramsMember = [userId, extra.houseNumber, extra.wardNumber];
-            console.log("Inserting Member:", userId, extra.houseNumber, extra.wardNumber);
+            const paramsMember = [userId, houseNumber, wardNumber];
+            console.log("Inserting Member:", paramsMember);
             await Database.insert(sqlMember, paramsMember);
         }
 
         if (role === "Worker") {
-            const sqlWorker = `INSERT INTO Worker (Worker_ID, TaskCount) 
-                               VALUES (?, ?)`;
-            const paramsWorker = [userId, extra.taskCount || 0];
+            const wardNumber = extra?.wardNumber || null;
+            const sqlWorker = `INSERT INTO Worker (Worker_ID, WardNumber, taskAssigned) 
+                               VALUES (?, ?, ?)`;
+            const paramsWorker = [userId, wardNumber, "no"];
+            console.log("Inserting Worker:", paramsWorker);
             await Database.insert(sqlWorker, paramsWorker);
         }
 
         return userId;
+    } catch (err) {
+        console.error("Error adding user:", err);
+        throw err;
     }
+}
 
     // ➤ Delete a user
    async deleteUser(userId) {

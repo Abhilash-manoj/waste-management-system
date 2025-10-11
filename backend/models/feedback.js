@@ -17,19 +17,37 @@ export default class Feedback {
     }
 
 
-    static async viewFeedback() {
-        const sql = `
-     SELECT 
-    f.Feedback_ID,
-    f.Comments,
-    DATE_FORMAT(f.DateSubmitted, '%Y-%m-%d %H:%i') AS DateSubmitted,
-    u.Name AS MemberName
-    FROM Feedback f
-    INNER JOIN Member m ON f.Member_ID = m.Member_ID
-    INNER JOIN User u ON m.Member_ID = u.User_ID
-    ORDER BY f.DateSubmitted DESC;
-
+static async viewFeedback(memberId) {
+ 
+    let sql;
+if (memberId) {
+    sql = `
+        SELECT 
+            f.Feedback_ID,
+            f.Comments,
+            DATE_FORMAT(f.DateSubmitted, '%Y-%m-%d %H:%i') AS DateSubmitted,
+            u.Name AS MemberName
+        FROM Feedback f
+        INNER JOIN Member m ON f.Member_ID = m.Member_ID
+        INNER JOIN User u ON m.Member_ID = u.User_ID
+        WHERE m.Member_ID = ?
+        ORDER BY f.DateSubmitted DESC;
     `;
-        return await Database.fetchAll(sql);
-    }
+} else {
+    // All feedback
+    sql = `
+        SELECT 
+            f.Feedback_ID,
+            f.Comments,
+            DATE_FORMAT(f.DateSubmitted, '%Y-%m-%d %H:%i') AS DateSubmitted,
+            u.Name AS MemberName
+        FROM Feedback f
+        INNER JOIN Member m ON f.Member_ID = m.Member_ID
+        INNER JOIN User u ON m.Member_ID = u.User_ID
+        ORDER BY f.DateSubmitted DESC;
+    `;
+}
+
+    return await Database.fetchAll(sql, [memberId]);
+}
 }

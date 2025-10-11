@@ -10,9 +10,23 @@ export default class Member extends User {
         this.wardNumber = wardNumber;
     }
 
+
     // Find a member by house number
     static async findByHouseNumber(houseNumber) {
-        const sql = `SELECT * FROM member WHERE HouseNumber = ?`;
+            const sql = `
+        SELECT 
+            u.User_ID,
+            u.Name,
+            u.Email,
+            u.Password,
+            u.ContactInfo,
+            u.Role,
+            m.HouseNumber,
+            m.WardNumber
+        FROM Member AS m
+        INNER JOIN User AS u ON m.Member_ID = u.User_ID
+        WHERE m.HouseNumber = ?
+    `;
         const rows = await Database.query(sql, [houseNumber]);
         return rows[0];
     }
@@ -37,7 +51,7 @@ export default class Member extends User {
 
     submitWasteRequest(Member_ID, WasteType, HouseNumber, WardNumber, PreferredDateStart, PreferredDateEnd) {
         const sqlRequest = `INSERT INTO wasterequest (Member_ID, WasteType, HouseNumber, WardNumber, PreferredDateStart, PreferredDateEnd, Status, AssignedWorker_ID, ConfirmedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const paramsRequest = [Member_ID, WasteType, HouseNumber, WardNumber, PreferredDateStart, PreferredDateEnd, "Pending", null, null];
+        const paramsRequest = [Member_ID, WasteType, HouseNumber, WardNumber, PreferredDateStart, PreferredDateEnd, "Pending Assignment", null, null];
         return Database.insert(sqlRequest, paramsRequest);
     }
 
