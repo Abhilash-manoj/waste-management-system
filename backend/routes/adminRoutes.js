@@ -1,6 +1,8 @@
 import express from "express";
 import Admin from '../models/admin.js';
 import AdminController from '../controllers/adminController.js';
+import { validateRequest } from "../middlewares/validateRequest.js";
+import { loginValidation, addUserValidation } from "../validation/validate.js";
 
 const router = express.Router();
 const adminModel = Admin;
@@ -8,17 +10,17 @@ const adminController = new AdminController(adminModel);
 
 // Admin login routes
 router.get('/adminlogin', (req, res) => adminController.renderLoginPage(req, res));
-router.post('/adminlogin', (req, res) => adminController.login(req, res));
+router.post('/adminlogin', loginValidation, validateRequest, (req, res) => adminController.login(req, res));
 router.get('/admindashboard', (req, res) => adminController.renderDashboard(req, res));
 
 // Dashboard
 router.get("/dashboard", (req, res) => adminController.showDashboard(req, res));
 
 // Users
-router.post("/adduser", (req, res) => {
-  console.log(" /admin/adduser hit");
-  console.log(" Raw body:", req.body);adminController.addUser(req, res);});
-  
+router.post("/adduser", addUserValidation, validateRequest, (req, res) => {
+  adminController.addUser(req, res);
+});
+
 router.delete("/deleteuser", (req, res) => adminController.deleteUser(req, res));
 router.get("/viewusers", (req, res) => adminController.viewUsers(req, res));
 

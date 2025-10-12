@@ -8,41 +8,25 @@ class WorkerController {
         this.workerModel = workerModel;
     }
 
-    
-  validateInput(workerId, wardNumber, password) {
-    const idRegex = /^[A-Za-z0-9\-\/]+$/;
-    const wardRegex = /^\d+$/;
-    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
-
-    return (
-      idRegex.test(workerId) &&
-      wardRegex.test(wardNumber) &&
-      passRegex.test(password)
-    );
-  }
-
   renderLoginPage(req, res) {
     res.render('workerLogin');
   }
 
 async login(req, res) {
-  const { workerid, wardnumber, pass } = req.body;
-
-  if (!this.validateInput(workerid, wardnumber, pass)) {
-    return res.render("workerLogin", { error: "Invalid input format." });
-  }
+  
+  const { email, pass } = req.body;
 
   try {
-    const worker = await this.workerModel.findByWorkerId(workerid);
+    const worker = await this.workerModel.findByEmail(email);
 
-    if (!worker || String(worker.WardNumber) !== String(wardnumber)) {
-      return res.render("workerLogin", { error: "Invalid WorkerID or WardNumber." });
+    if (!worker) {
+      return res.render("workerLogin", { error: "Invalid Email or Password." });
     }
 
     const isValid = await this.workerModel.verifyPassword(pass, worker.Password);
 
     if (!isValid) {
-      return res.render("workerLogin", { error: "Invalid Password." });
+      return res.render("workerLogin", { error: "Invalid Email or Password." });
     }
 
     // ✅ Save worker session

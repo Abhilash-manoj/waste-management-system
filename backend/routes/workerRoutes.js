@@ -1,6 +1,8 @@
 import express from "express";
 import Worker from "../models/worker.js";
 import WorkerController from "../controllers/workerController.js";
+import { validateRequest } from "../middlewares/validateRequest.js";
+import { loginValidation } from "../validation/validate.js";
 
 const router = express.Router();
 const workerModel = Worker;
@@ -8,7 +10,7 @@ const workerController = new WorkerController(workerModel);
 
 // Worker login routes
 router.get("/workerlogin", (req, res) => workerController.renderLoginPage(req, res));
-router.post("/workerlogin", (req, res) => workerController.login(req, res));
+router.post("/workerlogin", loginValidation, validateRequest, (req, res) => workerController.login(req, res));
 router.get("/workerdashboard", (req, res) => workerController.renderDashboard(req, res)); // fixed method name
 
 // GET Worker Dashboard (old version)

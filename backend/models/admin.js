@@ -10,10 +10,10 @@ export default class Admin {
         this.password = password;  // in real project, hash this
     }
 
-    // Find an admin by AdminID
-    static async findByAdminId(adminId) {
-        const sql = 'SELECT * FROM admin WHERE Admin_ID = ?';
-        const rows = await Database.query(sql, [adminId]);
+    // Find an admin by email
+    static async findByEmail(email) {
+        const sql = 'SELECT * FROM admin WHERE email = ?';
+        const rows = await Database.query(sql, [email]);
         return rows[0];
     }
  // ➤ Add a new user with role handling

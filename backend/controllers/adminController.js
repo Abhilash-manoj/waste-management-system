@@ -19,28 +19,28 @@ class AdminController {
   // ✅ Handle login POST request
   async login(req, res) {
     try {
-      const { admin, pass } = req.body;
+      const { email, pass } = req.body;
 
       // 🔒 Validate input
-      if (!admin || !pass || pass.length < 6) {
+      if (!email || !pass || pass.length < 6) {
         return res.render('adminLogin', {
-          error: 'Admin ID cannot be empty and password must be at least 6 characters.'
+          error: 'Email cannot be empty and password must be at least 6 characters.'
         });
       }
 
       // 🔍 Find admin in database
-      const adminData = await this.adminModel.findByAdminId(admin);
+      const adminData = await this.adminModel.findByEmail(email);
       if (!adminData) {
-        console.log("❌ Admin not found:", admin);
+        console.log("❌ Admin not found:", email);
         return res.render('adminLogin', {
-          error: 'Invalid Admin ID or password.'
+          error: 'Invalid Email or password.'
         });
       }
 
       // 🧩 Check if Password field exists
       const hashedPassword = adminData.Password || adminData.password;
       if (!hashedPassword) {
-        console.error("⚠️ No password field found for admin:", admin);
+        console.error("⚠️ No password field found for admin:", email);
         return res.render('adminLogin', {
           error: 'Invalid Admin ID or password.'
         });
@@ -49,7 +49,7 @@ class AdminController {
       // 🔑 Compare password securely
       const match = await bcrypt.compare(pass, hashedPassword);
       if (!match) {
-        console.log("❌ Password mismatch for admin:", admin);
+        console.log("❌ Password mismatch for admin:", email);
         return res.render('adminLogin', {
           error: 'Invalid Admin ID or password.'
         });
@@ -61,8 +61,8 @@ class AdminController {
         return res.status(500).send("Session not initialized");
       }
 
-      req.session.admin = admin;
-      console.log("✅ Admin logged in:", admin);
+      req.session.admin = email;
+      console.log("✅ Admin logged in:", email);
       res.redirect('/admin/admindashboard');
     } catch (err) {
       console.error("⚠️ Error in admin login:", err);

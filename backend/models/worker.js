@@ -9,8 +9,8 @@ export default class Worker extends User {
         this.taskCount = taskCount;
     }
 
-    // Find a worker by WorkerID
-   static async findByWorkerId(workerId) {
+    // Find a worker by email
+   static async findByEmail(email) {
     const sql = `
         SELECT 
             u.User_ID,
@@ -23,9 +23,9 @@ export default class Worker extends User {
             w.WardNumber
         FROM Worker AS w
         INNER JOIN User AS u ON w.Worker_ID = u.User_ID
-        WHERE w.Worker_ID = ?
+        WHERE u.Email = ?
     `;
-    const rows = await Database.query(sql, [workerId]);
+    const rows = await Database.query(sql, [email]);
     return rows[0];
 }
 
