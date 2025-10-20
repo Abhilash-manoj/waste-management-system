@@ -107,58 +107,66 @@
     <p>The mind that welcomes new ideas opens the door to endless possibilities.</p>
   </div>
 
-  <div class="container">
-    <form class="login-card" id="adminLoginForm" action="/admin/adminlogin" method="POST">
-      <a href="/home" class="back">&lArr;</a>
-      <h1>Log In</h1>
-      <h2>Admin</h2>
+  <% if (typeof error !== 'undefined') { %>
+  <div class="error-popup"><%= error %></div>
+<% } %>
 
-      <div class="input-group">
-        <label for="adminid">Admin ID</label>
-        <input type="text" name="admin" id="adminid" placeholder="Enter Admin ID" required />
-      </div>
+<div class="container">
+  <form class="login-card" id="adminLoginForm" action="/admin/adminlogin" method="POST">
+    <a href="/home" class="back">&lArr;</a>
+    <h1>Log In</h1>
+    <h2>Admin</h2>
 
-      <div class="input-group">
-        <label for="pass">Password</label>
-        <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
-      </div>
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="text" name="email" id="email" placeholder="Enter Admin Email" required />
+    </div>
 
-      <button type="submit" class="login-btn" name="submit">Submit</button>
-    </form>
-  </div>
+    <div class="input-group">
+      <label for="pass">Password</label>
+      <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+    </div>
 
-  <script>
-    class AdminLogin {
-      constructor(formId) {
-        this.form = document.getElementById(formId);
-        this.adminInput = document.getElementById('adminid');
-        this.passInput = document.getElementById('pass');
-        this.attachEvents();
-      }
+    <button type="submit" class="login-btn" name="submit">Submit</button>
+  </form>
+</div>
 
-      attachEvents() {
-        if (!this.form) return;
-        this.form.addEventListener('submit', (e) => {
-          const isValid = this.validateInputs();
-          if (!isValid) {
-            e.preventDefault();
-            alert('❌ Admin ID cannot be empty and password must be at least 6 characters.');
-          }
-        });
-      }
-
-      validateInputs() {
-        const adminId = this.adminInput.value.trim();
-        const password = this.passInput.value.trim();
-        const isAdminValid = adminId.length > 0;
-        const isPasswordValid = password.length >= 6;
-        return isAdminValid && isPasswordValid;
-      }
+<script>
+  class AdminLoginValidator {
+    constructor(formId) {
+      this.form = document.getElementById(formId);
+      this.emailInput = document.getElementById('email');
+      this.passInput = document.getElementById('pass');
+      this.attachEvents();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      new AdminLogin('adminLoginForm');
-    });
-  </script>
+    attachEvents() {
+      if (!this.form) return;
+      this.form.addEventListener('submit', (e) => this.validateForm(e));
+    }
+
+    validateForm(e) {
+      const email = this.emailInput.value.trim();
+      const pass = this.passInput.value.trim();
+      let errors = [];
+
+      // ✅ Email validation
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        errors.push("Please enter a valid email address.");
+      }
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        alert(errors.join("\n"));
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new AdminLoginValidator('adminLoginForm');
+  });
+</script>
+
 </body>
 </html>

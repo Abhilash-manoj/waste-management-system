@@ -111,79 +111,74 @@
     <p>Growth requires adaptation, and those who refuse to evolve remain stagnant</p>
   </div>
 
-  <div class="container">
-    <form class="login-card" id="workerLoginForm" action="/worker/workerlogin" method="POST">
-      <a href="/home" class="back">&lArr;</a>
-      <h1>Log In</h1>
-      <h2>Worker</h2>
+<div class="container">
+  <form class="login-card" id="workerLoginForm" action="/worker/workerlogin" method="POST">
+    <a href="/home" class="back">&lArr;</a>
+    <h1>Log In</h1>
+    <h2>Worker</h2>
 
-      <div class="input-group">
-        <label for="workerid">Worker ID</label>
-        <input type="text" name="workerid" id="workerid" placeholder="Enter WorkerID" required />
-      </div>
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="text" name="email" id="email" placeholder="Enter Email" required />
+    </div>
 
-      <div class="input-group">
-        <label for="wardnumber">Ward Number</label>
-        <input type="text" name="wardnumber" id="wardnumber" placeholder="Enter WardNumber" required />
-      </div>
+    <div class="input-group">
+      <label for="pass">Password</label>
+      <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+    </div>
 
-      <div class="input-group">
-        <label for="pass">Password</label>
-        <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
-      </div>
+    <a class="forgot" href="/workerforgotpassword">Forgot Password</a>
+    <button type="submit" class="login-btn">Submit</button>
+  </form>
+</div>
 
-      <a class="forgot" href="/workerforgotpassword">Forgot Password</a>
-      <button type="submit" class="login-btn">Submit</button>
-    </form>
-  </div>
-
-  <script>
-    class LoginValidator {
-      constructor(formId) {
-        this.form = document.getElementById(formId);
-        this.workerInput = document.getElementById('workerid');
-        this.wardInput = document.getElementById('wardnumber');
-        this.passInput = document.getElementById('pass');
-        this.attachEvents();
-      }
-
-      attachEvents() {
-        this.form.addEventListener('submit', (e) => this.validateForm(e));
-      }
-
-      validateForm(e) {
-        const worker = this.workerInput.value.trim();
-        const ward = this.wardInput.value.trim();
-        const pass = this.passInput.value.trim();
-        let errors = [];
-
-        if (!worker.match(/^[A-Za-z0-9\-\/]+$/)) {
-          errors.push("Worker ID contains invalid characters.");
-        }
-
-        if (!ward.match(/^\d+$/)) {
-          errors.push("Ward Number must be numeric.");
-        }
-
-        const hasLower = /[a-z]/.test(pass);
-        const hasUpper = /[A-Z]/.test(pass);
-        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
-        const isLongEnough = pass.length >= 6;
-
-        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
-          errors.push("Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character.");
-        }
-
-        if (errors.length > 0) {
-          e.preventDefault();
-          alert(errors.join("\\n"));
-        }
-      }
+<script>
+  class LoginValidator {
+    constructor(formId) {
+      this.form = document.getElementById(formId);
+      this.emailInput = document.getElementById('email');
+      this.passInput = document.getElementById('pass');
+      this.attachEvents();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      new LoginValidator('workerLoginForm');
-    });
-  </script>
+    attachEvents() {
+      this.form.addEventListener('submit', (e) => this.validateForm(e));
+    }
+
+    validateForm(e) {
+      const email = this.emailInput.value.trim();
+      const pass = this.passInput.value.trim();
+      let errors = [];
+
+      // ✅ Email validation
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        errors.push("Please enter a valid email address.");
+      }
+
+      // ✅ Password validation
+      const hasLower = /[a-z]/.test(pass);
+      const hasUpper = /[A-Z]/.test(pass);
+      const hasNumber = /\d/.test(pass);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+      const isLongEnough = pass.length >= 6;
+
+      if (!isLongEnough || !hasLower || !hasUpper || !hasNumber || !hasSpecial) {
+        errors.push(
+          "Password must be at least 6 characters long and include uppercase, lowercase, number, and special character."
+        );
+      }
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        alert(errors.join("\n"));
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new LoginValidator('workerLoginForm');
+  });
+</script>
 </body>
 </html>

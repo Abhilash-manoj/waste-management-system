@@ -233,51 +233,54 @@
     document.getElementById("worker-form").style.display = "none";
   });
 
-  // Unified function for adding users
-  async function addUser(e, role) {
-    e.preventDefault();
+ async function addUser(e, role) {
+  e.preventDefault();
 
-    let payload = { role };
+  let payload = { role };
 
-    if (role === "Worker") {
-      payload.name = document.getElementById("worker-name").value;
-      payload.email = document.getElementById("worker-email").value;
-      payload.password = document.getElementById("worker-password").value;
-      payload.contactInfo = document.getElementById("worker-phone").value; // phone stored in contactInfo
-      payload.extra = {
-        wardNumber: document.getElementById("worker-ward").value
-      };
-    }
-
-    if (role === "Member") {
-      payload.name = document.getElementById("member-name").value;
-      payload.password = document.getElementById("member-password").value;
-      payload.contactInfo = document.getElementById("member-phone").value; 
-      payload.extra = {
-        houseNumber: document.getElementById("member-house").value,
-        wardNumber: document.getElementById("member-ward").value
-      };
-    }
-
-    try {
-      const res = await fetch("/admin/adduser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        alert(`✅ ${role} added successfully!`);
-        e.target.reset();
-      } else {
-        throw new Error(data.message || `Failed to add ${role}`);
-      }
-    } catch (err) {
-      console.error(err);
-      alert(`❌ Error adding ${role}`);
-    }
+  if (role === "Worker") {
+    payload.name = document.getElementById("worker-name").value;
+    payload.email = document.getElementById("worker-email").value;
+    payload.password = document.getElementById("worker-password").value;
+    payload.contactInfo = document.getElementById("worker-phone").value;
+    payload.extra = {
+      wardNumber: parseInt(document.getElementById("worker-ward").value)
+    };
+  } else {
+    payload.name = document.getElementById("member-name").value;
+    payload.password = document.getElementById("member-password").value;
+    payload.contactInfo = document.getElementById("member-phone").value;
+    payload.extra = {
+      houseNumber: document.getElementById("member-house").value,
+      wardNumber: parseInt(document.getElementById("member-ward").value)
+    };
   }
+
+  try {
+    const res = await fetch("/admin/adduser", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.errors && data.errors.length > 0) {
+      alert(data.errors.map(err => err.msg).join("\n"));
+      return;
+    }
+
+    if (res.ok && data.success) {
+      alert(`✅ ${role} added successfully!`);
+      document.getElementById(role === "Worker" ? "worker-form" : "member-form").reset();
+    } else {
+      throw new Error(data.message || `Failed to add ${role}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert(`❌ Error adding ${role}`);
+  }
+}
+
 
     async function deleteUser(userId) {
       if (!confirm("Are you sure you want to delete this user?")) return;

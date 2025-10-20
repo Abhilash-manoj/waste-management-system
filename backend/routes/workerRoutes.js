@@ -2,36 +2,43 @@ import express from "express";
 import Worker from "../models/worker.js";
 import WorkerController from "../controllers/workerController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
-import { loginValidation } from "../validation/validate.js";
+import ValidationRules from "../validation/validate.js"; // ✅ Import validation class
 
 const router = express.Router();
 const workerModel = Worker;
 const workerController = new WorkerController(workerModel);
 
-// Worker login routes
+// ✅ Worker login routes
 router.get("/workerlogin", (req, res) => workerController.renderLoginPage(req, res));
-router.post("/workerlogin", loginValidation, validateRequest, (req, res) => workerController.login(req, res));
-router.get("/workerdashboard", (req, res) => workerController.renderDashboard(req, res)); // fixed method name
+router.post(
+  "/workerlogin",
+  ValidationRules.loginValidation, // ✅ fixed reference
+  validateRequest,
+  (req, res) => workerController.login(req, res)
+);
 
-// GET Worker Dashboard (old version)
-router.get("/workerdashboard-old", (req, res) => workerController.showDashboard(req, res)); // kept for old dashboard
+// ✅ Worker dashboard
+router.get("/workerdashboard", (req, res) => workerController.renderDashboard(req, res));
 
-// Get available workers
+// ✅ Old dashboard route (optional)
+router.get("/workerdashboard-old", (req, res) => workerController.showDashboard(req, res));
+
+// ✅ Get available workers
 router.post("/available-workers", (req, res) => workerController.getAvailableWorkers(req, res));
 
-// Accept task
+// ✅ Accept task
 router.post("/accept-task", (req, res) => workerController.confirmTaskDate(req, res));
 
-// Get dates
+// ✅ Get task dates
 router.post("/get-dates", (req, res) => workerController.getDates(req, res));
 
-// Complete task
+// ✅ Complete task
 router.post("/complete-task", (req, res) => workerController.completeTask(req, res));
 
-// View requests
+// ✅ View assigned requests
 router.get("/view-requests", (req, res) => workerController.viewRequests(req, res));
 
-// Assign worker to request
+// ✅ Reassign worker
 router.post("/reassign-worker", (req, res) => workerController.reassignWorker(req, res));
 
 export default router;
