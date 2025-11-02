@@ -13,6 +13,7 @@ export default class Member extends User {
 
     // Find a member by house number
     static async findByHouseNumber(houseNumber) {
+        console.log("Finding member by house number:", houseNumber);
             const sql = `
         SELECT 
             u.User_ID,
@@ -21,8 +22,10 @@ export default class Member extends User {
             u.Password,
             u.ContactInfo,
             u.Role,
+            u.ProfilePicture,
             m.HouseNumber,
-            m.WardNumber
+            m.WardNumber,
+            m.HouseName 
         FROM Member AS m
         INNER JOIN User AS u ON m.Member_ID = u.User_ID
         WHERE m.HouseNumber = ?

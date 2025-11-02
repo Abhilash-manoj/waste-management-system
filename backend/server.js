@@ -14,36 +14,35 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Resolve __dirname in ES module
+//  Resolve __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Middleware for parsing request bodies
+//  Middleware for parsing request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Session setup
+//  Session setup
 app.use(session({
   secret: process.env.SESSION_KEY || "your_super_secret_key",
   resave: false,
   saveUninitialized: true
 }));
 
-// ✅ Flash messages
+//  Flash messages
 app.use(flash());
 
-// ✅ View engine setup
+//  View engine setup
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "..", "frontend", "views"));
-console.log("✅ Views directory:", app.get("views"));
 
-// ✅ Static assets
+app.use(express.static(path.join(__dirname, 'public')));
+
+//  Static assets
 app.use("/components", express.static(path.join(__dirname, "..", "frontend", "components")));
 
-// ✅ Admin middleware
+//  Admin middleware
 app.use("/admin", loadUsers);
-
-console.log("✅ Views directory:", app.get("views"));
 
 
 app.get("/home", (req, res) => {
@@ -60,12 +59,16 @@ app.get("/contact", (req, res) => {
   res.render("contact");
 });
 
+app.get("/workereditprofile", (req, res) => {
+  res.render("workereditprofile");
+});
+
 // ✅ Route registration
 app.use("/admin", adminRoutes);
 app.use("/member", memberRoutes);
 app.use("/worker", workerRoutes);
 
-// ✅ Start server
+//  Start server
 app.listen(5000, () => {
-  console.log("✅ Server running at http://localhost:5000");
+  console.log(" Server running at http://localhost:5000");
 });

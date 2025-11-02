@@ -2,6 +2,7 @@ import Worker from "../models/worker.js";
 import WasteRequest from "../models/wastecollectionrequest.js";
 import Member from "../models/member.js";
 import { SendNotification } from "../models/notification.js";
+import User from "../models/user.js";
 
 class WorkerController {
     constructor(workerModel) {
@@ -31,9 +32,13 @@ async login(req, res) {
 
     // ✅ Save worker session
     req.session.worker = {
-      WorkerID: worker.Worker_ID,
+      id: worker.Worker_ID,
       WardNumber: worker.WardNumber,
       name: worker.Name,
+      email: worker.Email,
+      contactInfo: worker.ContactInfo,
+      role: worker.Role,
+      profilePicture: worker.ProfilePicture
     };
 
     res.redirect("/worker/workerdashboard");
@@ -55,9 +60,14 @@ renderDashboard(req, res) {
 
 }
 
-  // Render Worker Dashboard
-  showDashboard(req, res) {
-    res.render("workerDashboard", { success: [], error: [] });
+  // Render Worker Edit Profile
+  workerEditProfile(req, res) {
+
+      if (!req.session.worker) {
+      return res.redirect('/worker/workerlogin');
+    }
+
+    res.render("workerEditProfile", { session: req.session });
   }
 
     // Get Available Workers
@@ -72,6 +82,50 @@ renderDashboard(req, res) {
             res.status(500).json({ success: false, message: "Failed to load workers." });
         }
     }
+
+
+     async updateProfile(req, res) {
+        try {
+    
+        const {
+            fullName,
+            contactInfo,
+            email,
+            userId = req.session?.worker?.id || req.body.workerId
+          } = req.body;
+    
+          if (!userId) {
+            return res.status(401).json({ message: "You must be logged in to update a profile." });
+          }
+
+
+          let profilePicPath = req.session.worker.profilePicture; 
+          if (req.file) {
+            profilePicPath = req.file.path.replace('public', '').replace(/\\/g, '/');
+          }
+
+                await User.updateWorkerProfile(
+            email,
+            fullName,
+            contactInfo,
+            profilePicPath,
+             userId
+          );
+          console.log("worker Profile is:",profilePicPath);
+
+          req.session.worker.name = fullName;
+          req.session.worker.email = email;
+          req.session.worker.contact = contactInfo;
+          req.session.worker.profilePicture = profilePicPath;
+    
+          res.status(200).json({ message: "Profile updated successfully!" });
+    
+        } catch (error) {
+          console.error("Error in updateProfile controller:", error);
+          res.status(500).json({ message: "An error occurred while updating the profile." });
+        }
+      }
+
 
     // View Requests
     async viewRequests(req, res) {

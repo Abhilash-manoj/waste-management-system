@@ -1,6 +1,7 @@
 import Member from "../models/member.js";
 import Feedback from "../models/feedback.js";
 import WasteRequest from "../models/wastecollectionrequest.js";
+import User from "../models/user.js";
 
 class MemberController {
    constructor(memberModel) {
@@ -48,7 +49,9 @@ class MemberController {
       contactInfo: member.ContactInfo,
       role: member.Role,
       houseNumber: member.HouseNumber,
-      wardNumber: member.WardNumber
+      wardNumber: member.WardNumber,
+      houseName: member.HouseName,
+      profilePicture: member.ProfilePicture
     };
 
     res.redirect('/member/memberdashboard');
@@ -63,15 +66,20 @@ class MemberController {
     if (!req.session.member) {
       return res.redirect('/member/memberlogin');
     }
-
+    console.log("Rendering dashboard for member:", req.session.member);
     res.render('memberDashboard', {
-  session: req.session
-});
+      session: req.session
+    });
   }
 
-  // Render Member Dashboard
-  showDashboard(req, res) {
-    res.render("memberDashboard", { success: [], error: [] });
+  // Render Member Edit Profile
+  memberEditProfile(req, res) {
+
+      if (!req.session.member) {
+      return res.redirect('/member/memberlogin');
+    }
+
+    res.render("memberEditProfile", { session: req.session });
   }
 
   // Submit a waste collection request
@@ -140,7 +148,51 @@ class MemberController {
     }
   }
 
-  
+    
+  async updateProfile(req, res) {
+    try {
+
+    const {
+        fullName,
+        contactInfo,
+        houseName,
+        email,
+        userId = req.session?.member?.id || req.body.memberId 
+      } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "You must be logged in to update a profile." });
+      }
+
+
+      let profilePicPath = req.session.member.profilePicture; 
+      if (req.file) {
+        profilePicPath = req.file.path.replace('public', '').replace(/\\/g, '/');
+      }
+
+            await User.updateMemberProfile(
+        email,
+        fullName,
+        contactInfo,
+        profilePicPath,
+        houseName,
+         userId
+      );
+      console.log("member Profile is:",profilePicPath);
+     
+      req.session.member.name = fullName;
+      req.session.member.email = email;
+      req.session.member.contact = contactInfo;
+      req.session.member.houseName = houseName;
+      req.session.member.profilePicture = profilePicPath;
+
+      res.status(200).json({ message: "Profile updated successfully!" });
+
+    } catch (error) {
+      console.error("Error in updateProfile controller:", error);
+      res.status(500).json({ message: "An error occurred while updating the profile." });
+    }
+  }
 
   // View feedback (for member dashboard)
   async viewFeedback(req, res) {

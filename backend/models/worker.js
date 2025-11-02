@@ -19,6 +19,7 @@ export default class Worker extends User {
             u.Password,
             u.ContactInfo,
             u.Role,
+            u.ProfilePicture,
             w.Worker_ID,
             w.WardNumber
         FROM Worker AS w

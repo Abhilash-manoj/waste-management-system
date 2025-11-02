@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Account Management</title>
+    <title>Account Settings - Waste Management</title>
     
     <style>
         /* Base Styling and Layout */
@@ -24,22 +24,19 @@
             display: flex;
             align-items: center;
             margin-bottom: 25px;
-            gap: 15px; 
         }
         .back-button {
             font-size: 28px;
+            margin-right: 15px;
             border: none;
             background: none;
             cursor: pointer;
             color: #333;
-            padding: 0;
-            line-height: 1;
         }
         .header h1 {
-            color: #4CAF50;
-            font-size: 28px;
+            color: #333;
+            font-size: 24px;
             font-weight: bold;
-            margin: 0; 
         }
         
         /* Card Styling */
@@ -51,29 +48,12 @@
             margin-bottom: 25px;
         }
         .card h2 {
-            color: #333; 
+            color: #4CAF50; 
             font-size: 20px;
             margin-top: 0;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 10px;
             margin-bottom: 20px;
-        }
-
-        /* Profile Picture Styling (NEW) */
-        .profile-picture-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        #profile-pic-preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #eee;
         }
 
         /* Input Group Styling */
@@ -87,7 +67,9 @@
             color: #555;
             font-size: 14px;
         }
-        .input-group input {
+        .input-group input[type="text"],
+        .input-group input[type="email"],
+        .input-group input[type="tel"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -98,10 +80,9 @@
         
         /* Read-Only Field Styling */
         .input-group input[readonly] {
-            background-color: #e8e8e8; 
+            background-color: #f0f0f0; 
             color: #777;
             cursor: default;
-            font-weight: bold;
         }
         .read-only-note {
             font-size: 12px;
@@ -124,8 +105,11 @@
             background-color: #4CAF50;
             color: white;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 10px;
             font-size: 16px;
+        }
+        .primary-button:hover {
+            background-color: #45a049;
         }
         .secondary-button {
             background-color: #f0f0f0;
@@ -135,17 +119,110 @@
             margin-top: 15px;
         }
         
+        /* Profile Picture Styling */
+        .profile-picture-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        #profile-pic-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #eee;
+        }
+        
         /* Security Block */
         .password-reset-block {
             padding: 15px;
-            border: 1px solid #c9e2b1;
-            background-color: #e6ffec; 
+            border: 1px solid #ffeeba;
+            background-color: #fff3cd; 
             border-radius: 8px;
         }
         .password-reset-block h3 {
             margin-top: 0;
-            color: #4CAF50;
+            color: #856404;
         }
+
+        /* --- Custom Toggle Switch Styles --- */
+        /* These styles are not used but harmless */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .toggle-container label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 0; /* Override input-group margin */
+            cursor: pointer;
+        }
+        .toggle-checkbox {
+            display: none;
+        }
+        .toggle-label {
+            cursor: pointer;
+            text-indent: -9999px;
+            width: 50px;
+            height: 28px;
+            background-color: #ccc; /* Default off color */
+            display: block;
+            border-radius: 100px;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s ease;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4CAF50; /* Green "on" color */
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            left: calc(100% - 3px);
+            transform: translateX(-100%);
+        }
+
+        /* --- Slide-down Animation --- */
+        /* These styles are not used but harmless */
+        #email-input-container {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease-out 0.1s, margin-top 0.5s ease-out;
+            margin-top: 0;
+        }
+        #email-input-container.visible {
+            max-height: 150px; 
+            opacity: 1;
+            margin-top: 10px; /* Add some space when it opens */
+        }
+        /* --- Status Message --- */
+        #form-status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .status-success {
+            color: green;
+        }
+        .status-error {
+            color: red;
+        }
+
     </style>
 </head>
 <body>
@@ -153,43 +230,54 @@
     <div class="page-container">
         <header class="header">
             <button class="back-button" onclick="history.back()">&larr;</button>
-            <h1>Staff Account Management</h1>
+            <h1>Account Settings</h1>
         </header>
 
         <main class="content-area">
             
             <section class="card profile-info-card">
-                <h2>Profile Details</h2>
+                <h2>Profile Information</h2>
                 
                 <div class="profile-picture-container">
-                    <img id="profile-pic-preview" src="data:image/jpeg;base64,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" alt="Profile Picture">
-                    <input type="file" id="profile-pic-upload" hidden accept="image/*" onchange="previewProfilePicture(event)">
+                    <img id="profile-pic-preview" src="<%= session.worker.profilePicture || 'https://placehold.co/80x80/4CAF50/FFFFFF?text=W' %>" alt="Profile Picture">
+                    
+                    
                     <button class="button secondary-button" onclick="document.getElementById('profile-pic-upload').click()">Change Picture</button>
                 </div>
-                
-                <form id="worker-profile-form">
+              
+                <form id="profile-form" method="POST" enctype="multipart/form-data">
+
+                     <input type="file" id="profile-pic-upload" name="profilePicture" hidden accept="image/*">
                     
                     <div class="input-group">
-                        <label for="staff-id">Staff ID</label>
-                        <input type="text" id="staff-id" value="STAFF-042" readonly>
-                        <span class="read-only-note">Your unique ID (cannot be edited)</span>
-                    </div>
-
-                    <div class="input-group">
                         <label for="full-name">Full Name</label>
-                        <input type="text" id="full-name"> 
-                    </div>
-                    <div class="input-group">
-                        <label for="email-address">Work Email Address</label>
-                        <input type="email" id="email-address">
+                        <input type="text" id="full-name" name="fullName" value="<%= session.worker.name %>">
+                        <input type="text" id="worker-id" name="workerId" value="<%= session.worker.id %>" hidden>
                     </div>
 
-                    <button type="submit" class="button primary-button">Save Profile Changes</button>
+                    <div class="input-group">
+                        <label for="contact-info">Contact Info</label>
+                        <input type="text" id="contact-info" name="contactInfo" value="<%= session.worker.contactInfo %>">
+                    </div>
+
+                    <div class="input-group">
+                            <label for="email-address">Email Address</label>
+                            <input type="email" id="email-address" name="email" value="<%= session.worker.email %>">
+                        </div>
+                    
+                    <div class="input-group">
+                        <label for="ward-number">Ward Number</label>
+                        <input type="text" id="ward-number" name="wardNumber" value="<%= session.worker.WardNumber %>" readonly>
+                        <span class="read-only-note">Auto filled from service profile (cannot be edited here)</span>
+                    </div>
+
+                    <button type="submit" class="button primary-button">Save Profile</button>
+                    <p id="form-status"></p>
                 </form>
             </section>
 
             <section class="card security-card">
-                <h2>Account Security</h2>
+                <h2>Security & Credentials</h2>
                 
                 <div class="password-reset-block">
                     <h3>🔒 Change Password</h3>
@@ -203,48 +291,82 @@
     </div>
 
     <script>
-        // FUNCTION TO PREVIEW UPLOADED PICTURE (NEW)
-        function previewProfilePicture(event) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                const output = document.getElementById('profile-pic-preview');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-        
-        document.getElementById('worker-profile-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
             
-            const newName = document.getElementById('full-name').value;
             const saveButton = this.querySelector('button[type="submit"]');
-            
+            const statusMessage = document.getElementById('form-status');
+
             saveButton.textContent = 'Saving...';
             saveButton.disabled = true;
+            statusMessage.textContent = ''; 
+            const formData = new FormData(this);
 
-            // Simulates calling the C++ backend logic (handleFormSubmission)
-            // In a real app, file upload for the picture would be handled here too.
-            setTimeout(() => {
-                alert(`SUCCESS: Worker profile updated for ${newName}.`);
-                saveButton.textContent = 'Save Profile Changes';
-                saveButton.disabled = false;
-            }, 1000); 
+    
+            console.log('FormData includes file:', formData.get('profilePicture'));
+
+            try {
+                // This correctly points to the /worker/ route
+                const response = await fetch('/worker/updateProfile', { 
+                    method: 'POST',
+                    body: formData 
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusMessage.textContent = result.message || 'Profile updated successfully!';
+                    statusMessage.className = 'status-success';
+                     // Reload the page on success to show the new session data (new pic)
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    throw new Error(result.message || 'Failed to update profile.');
+                }
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                statusMessage.textContent = error.message;
+                statusMessage.className = 'status-error';
+            } finally {
+                 if (statusMessage.className !== 'status-success') {
+                    saveButton.textContent = 'Save Profile';
+                    saveButton.disabled = false;
+                }
+            }
         });
+
 
         document.getElementById('reset-password-btn').addEventListener('click', function() {
             const statusMessage = document.getElementById('reset-status');
-            const workerEmail = document.getElementById('email-address').value;
-            
+            const userEmail = document.getElementById('email-address').value; 
             statusMessage.textContent = 'Sending secure link...';
             statusMessage.style.color = '#007bff';
-
-            // Simulates calling the C++ backend logic (initiatePasswordReset)
             setTimeout(() => {
-                statusMessage.textContent = `SUCCESS: Reset link sent to ${workerEmail}!`;
+                statusMessage.textContent = `SUCCESS: A password reset link has been sent to ${userEmail}!`;
                 statusMessage.style.color = 'green';
             }, 2000); 
+        });
+
+    
+ 
+        const fileInput = document.getElementById('profile-pic-upload');
+        console.log("File input element:", fileInput);
+        const previewImage = document.getElementById('profile-pic-preview');
+   
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0]; 
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
         });
 
     </script>
 </body>
 </html>
+

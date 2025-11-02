@@ -1,3 +1,6 @@
+import Database from "./database.js";
+
+
 export default class User {
     constructor(id, name, email, password, profilePicture, role) {
         this.id = id;
@@ -8,17 +11,33 @@ export default class User {
         this.role = role;
     }
 
-    login() {
-        console.log(`${this.name} logged in.`);
+
+  static async updateMemberProfile( email, name, contact, profilepic, houseName, memberId) {
+                const sql = `UPDATE user 
+                 JOIN member ON user.User_ID = member.Member_ID
+                 SET
+                    user.Email = ?,
+                    user.Name = ?,
+                    user.ContactInfo = ?,
+                    user.ProfilePicture = ?,
+                    member.HouseName = ?
+                 WHERE
+                    user.User_ID = ?;`;
+                const params = [email, name, contact, profilepic, houseName, memberId];
+                return await Database.update(sql, params);
     }
 
-    logout() {
-        console.log(`${this.name} logged out.`);
-    }
-
-    editProfile(newName, newEmail) {
-        this.name = newName;
-        this.email = newEmail;
+      static async updateWorkerProfile( email, name, contact, profilepic, workerId) {
+                const sql = `UPDATE user 
+                 SET
+                    Email = ?,
+                    Name = ?,
+                    ContactInfo = ?,
+                    ProfilePicture = ?
+                 WHERE
+                    User_ID = ?;`;
+                const params = [email, name, contact, profilepic, workerId];
+                return await Database.update(sql, params);
     }
 
     changePassword(newPassword) {

@@ -132,8 +132,9 @@
   <div class="sidebar">
     <div class="admin-profile">
       <h2>Dashboard</h2>
-      <img src="/images/blank-profile-picture.webp" class="admin-profile-pic" alt="Admin Profile Picture">
+      <img src="<%= session.worker.profilePicture || 'https://placehold.co/80x80/4CAF50/FFFFFF?text=W' %>" class="admin-profile-pic" alt="Admin Profile Picture">
       <h3><%= session.worker.name %></h3>
+      <a href="/worker/workerEditProfile">Edit Profile</a>
     </div>
     <div class="thin-green-line"></div>
     <div class="main-menu">
