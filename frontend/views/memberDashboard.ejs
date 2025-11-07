@@ -186,26 +186,36 @@
       document.getElementById("view-feedback-form").style.display = type === "viewfeedback" ? "block" : "none";
       document.getElementById("view-requests-form").style.display = type === "Requests" ? "block" : "none";
     }
+// Submit Request using JS
+document.getElementById("requestForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
 
-    // Submit Request using JS
-    document.getElementById("requestForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const res = await fetch("/member/submitrequest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const result = await res.json();
-        if (res.ok) alert("✅ Request submitted successfully!");
-        else alert(`❌ Failed: ${result.message || "Unknown error"}`);
-      } catch (err) {
-        alert("❌ Error submitting request: " + err.message);
-      }
+  try {
+    const res = await fetch("/member/submitrequest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
+
+    // Try to parse the response JSON
+    const result = await res.json();
+
+    if (res.ok && result.success) {
+      alert("✅ Request submitted successfully!");
+    } else {
+      
+      const msg = result.errors
+        ? result.errors.join("\n") 
+        : result.message || "Unknown error";
+      alert(`❌ Failed: ${msg}`);
+    }
+  } catch (err) {
+    alert("❌ Error submitting request: " + err.message);
+    console.error("Submit request error:", err);
+  }
+});
 
     // Submit Feedback using JS
     document.getElementById("feedbackForm").addEventListener("submit", async (e) => {

@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";     
 import WorkerController from "../controllers/workerController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
-import ValidationRules from "../validation/validate.js"; // ✅ Import validation class
+import ValidationRules from "../validation/validate.js"; 
 
 const router = express.Router();
 const workerModel = Worker;
@@ -62,8 +62,10 @@ router.get("/workerdashboard", (req, res) => workerController.renderDashboard(re
 
 router.get("/workerEditProfile", (req, res) => workerController.workerEditProfile(req, res));
 
+router.post("/workerchangePassword", workerController.changePassword);
+
 router.post(
-  "/updateProfile",
+  "/workerupdateProfile",
   uploadWithErrorHandler,
   (req, res) => workerController.updateProfile(req, res)
 );

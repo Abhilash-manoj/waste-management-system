@@ -111,7 +111,7 @@ class AdminController {
  // ➤ Delete User
   async deleteUser(req, res) {
     try {
-      const { userId } = req.params;
+      const { userId } = req.body;
 
       const user = new User();
       const deleted = await user.deleteUser(userId);

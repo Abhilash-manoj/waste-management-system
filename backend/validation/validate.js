@@ -63,7 +63,7 @@ class ValidationRules {
     }),
   ];
 
-  // ✅ Member Login
+  
   static memberLoginValidation = [
     body("wardnumber", "Ward number must be a valid integer")
       .isInt({ min: 1 })
@@ -75,7 +75,7 @@ class ValidationRules {
     this.common.password,
   ];
 
-  // ✅ Waste Request
+  
   static wasteRequestValidation = [
     body("wasteType", "Waste type is required")
       .trim()
@@ -86,17 +86,29 @@ class ValidationRules {
     this.common.houseNumber,
     this.common.wardNumber,
 
-    // Logical validation: end date after start date
-    body().custom((value, { req }) => {
-      const { preferredDateStart, preferredDateEnd } = req.body;
-      if (
-        new Date(preferredDateEnd).getTime() <
-        new Date(preferredDateStart).getTime()
-      ) {
-        throw new Error("End date must be after start date.");
-      }
-      return true;
-    }),
+body().custom((value, { req }) => {
+  const { preferredDateStart, preferredDateEnd } = req.body;
+
+  const start = new Date(preferredDateStart);
+  const end = new Date(preferredDateEnd);
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  if (start < today) {
+    throw new Error("Start date cannot be in the past.");
+  }
+
+  if (end < today) {
+    throw new Error("End date cannot be in the past.");
+  }
+
+  if (end.getTime() < start.getTime()) {
+    throw new Error("End date must be after start date.");
+  }
+
+  return true;
+})
   ];
 
   // ✅ Feedback

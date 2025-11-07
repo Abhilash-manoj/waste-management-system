@@ -255,31 +255,31 @@
       wardNumber: parseInt(document.getElementById("member-ward").value)
     };
   }
+try {
+  const res = await fetch("/admin/adduser", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 
-  try {
-    const res = await fetch("/admin/adduser", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+  const data = await res.json();
 
-    if (data.errors && data.errors.length > 0) {
-      alert(data.errors.map(err => err.msg).join("\n"));
-      return;
-    }
-
-    if (res.ok && data.success) {
-      alert(`✅ ${role} added successfully!`);
-      document.getElementById(role === "Worker" ? "worker-form" : "member-form").reset();
-    } else {
-      throw new Error(data.message || `Failed to add ${role}`);
-    }
-  } catch (err) {
-    console.error(err);
-    alert(`❌ Error adding ${role}`);
+  if (res.ok && data.success) {
+    alert(`✅ ${role} added successfully!`);
+    document.getElementById(role === "Worker" ? "worker-form" : "member-form").reset();
+  } else {
+    // Handle validation or other backend errors
+    const msg = data.errors
+      ? data.errors.join("\n") // if your validator returns array of messages
+      : data.message || `Failed to add ${role}`;
+    alert(`❌ Failed: ${msg}`);
   }
+
+} catch (err) {
+  console.error("❌ Error adding user:", err);
+  alert(`❌ Error adding ${role}: ${err.message}`);
 }
+ }
 
 
     async function deleteUser(userId) {

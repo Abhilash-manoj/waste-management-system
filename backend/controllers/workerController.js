@@ -126,6 +126,38 @@ renderDashboard(req, res) {
         }
       }
 
+      
+        async changePassword(req, res) {
+        try {
+          const { currentPassword, newPassword } = req.body;
+          const workerId = req.session?.worker?.id || req.body.workerId
+      
+          if (!workerId) {
+            return res.status(401).json({ success: false, message: "Unauthorized" });
+          }
+      
+          // Call the model function to update password
+          const worker = new User();
+          const success = await worker.changePassword(workerId, currentPassword, newPassword);
+      
+          if (success) {
+            res.json({
+              success: true,
+              message: "Password updated successfully.",
+            });
+          } else {
+            res.status(400).json({
+              success: false,
+              message: "Current password is incorrect.",
+            });
+          }
+        } catch (err) {
+          console.error("❌ Error changing password:", err);
+          res.status(500).json({ success: false, message: "Internal Server Error" });
+        }
+      }
+      
+
 
     // View Requests
     async viewRequests(req, res) {

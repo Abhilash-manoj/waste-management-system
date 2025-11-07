@@ -330,17 +330,7 @@
 
     <script>
 
-        
-        const hasLower = /[a-z]/.test(pass);
-        const hasUpper = /[A-Z]/.test(pass);
-        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
-        const isLongEnough = pass.length >= 6;
 
-        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
-          errors.push("Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character.");
-        }
-
-        
         document.getElementById('profile-form').addEventListener('submit', async function(e) {
             e.preventDefault(); 
             
