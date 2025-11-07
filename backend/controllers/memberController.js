@@ -194,6 +194,37 @@ class MemberController {
     }
   }
 
+  async changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const memberId = req.session?.member?.id || req.body.memberId
+
+    if (!memberId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Call the model function to update password
+    const member = new User();
+    const success = await member.changePassword(memberId, currentPassword, newPassword);
+
+    if (success) {
+      res.json({
+        success: true,
+        message: "Password updated successfully.",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Current password is incorrect.",
+      });
+    }
+  } catch (err) {
+    console.error("❌ Error changing password:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+
   // View feedback (for member dashboard)
   async viewFeedback(req, res) {
     try {

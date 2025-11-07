@@ -5,6 +5,7 @@ import Worker from "../models/worker.js";
 import bcrypt from 'bcrypt';
 import { SendNotification } from "../models/notification.js";
 import Member from "../models/member.js";
+import User from "../models/user.js";
 
 class AdminController {
   constructor(adminModel) {
@@ -87,61 +88,48 @@ class AdminController {
   showDashboard(req, res) {
     res.render("adminDashboard", { users: null });
   }
-// Add User
-async addUser(req, res) {
-  const { name, email, password, role, contactInfo, extra } = req.body;
 
-  try {
-    // ✅ Check if admin is logged in
-    const sessionAdmin = req.session?.admin;
-    if (!sessionAdmin) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
 
-    const admin = new Admin(
-      sessionAdmin.id,
-      sessionAdmin.email,
-      "hashedPass" // Hash inside addUser if needed
-    );
-
-    const userId = await admin.addUser(
-      name,
-      email || null,
-      password,
-      role,
-      contactInfo || null,
-      extra || {} // pass extra directly
-    );
-
-    res.json({ success: true, message: `User added with ID: ${userId}`, userId });
-  } catch (err) {
-    console.error("❌ Error adding user:", err.message);
-    res.status(500).json({ success: false, message: "Error adding user. Try again." });
-  }
-}
-
-  // Delete User
-  async deleteUser(req, res) {
-    const { userId } = req.body;
-
+ // ➤ Add New User
+  async addUser(req, res) {
     try {
-      const sessionAdmin = req.session?.admin;
-      const admin = new Admin(
-        sessionAdmin?.id,
-        sessionAdmin?.email,
-        "hashedPass"
-      );
+      const { name, email, password, role, contactInfo, extra } = req.body;
+      const user = new User();
+      const userId = await user.addUser(name, email, password, role, contactInfo, extra);
 
-      const deleted = await admin.deleteUser(userId);
+      res.json({
+        success: true,
+        message: `${role} added successfully.`,
+        userId,
+      });
+    } catch (err) {
+      console.error("❌ Error adding user:", err);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+  }
 
-      if (deleted > 0) {
-        res.json({ success: true, message: `User deleted with ID: ${userId}` });
+ // ➤ Delete User
+  async deleteUser(req, res) {
+    try {
+      const { userId } = req.params;
+
+      const user = new User();
+      const deleted = await user.deleteUser(userId);
+
+      if (deleted) {
+        res.json({
+          success: true,
+          message: "User deleted successfully.",
+        });
       } else {
-        res.status(400).json({ success: false, message: "Error deleting user. Try again." });
+        res.status(404).json({
+          success: false,
+          message: "User not found.",
+        });
       }
-    } catch (error) {
-      console.error("❌ Error deleting user:", error.message);
-      res.status(500).json({ success: false, message: "Error deleting user. Try again." });
+    } catch (err) {
+      console.error("❌ Error deleting user:", err);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
     }
   }
 

@@ -10,7 +10,7 @@ export default class Admin {
         this.password = password;  // in real project, hash this
     }
 
-    // Find an admin by email
+    // Find an admin by AdminID
     static async findByEmail(email) {
         const sql = 'SELECT * FROM admin WHERE email = ?';
         const rows = await Database.query(sql, [email]);

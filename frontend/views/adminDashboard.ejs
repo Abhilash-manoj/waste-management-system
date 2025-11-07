@@ -116,7 +116,7 @@
   <div class="sidebar">
     <div class="admin-profile">
       <h2>Dashboard</h2>
-      <img src="/images/blank-profile-picture.webp" class="admin-profile-pic" alt="Admin Profile Picture">
+      <img src="<%= 'https://placehold.co/80x80/4CAF50/FFFFFF?text=Admin' %>" class="admin-profile-pic" alt="Admin Profile Picture">
       <h3>Admin1</h3>
     </div>
     <div class="thin-green-line"></div>
@@ -317,8 +317,7 @@
         console.error(err);
       }
     }
-
-async function assignWorker(requestId) {
+async function assignWorker(requestId, memberWardNumber) {
   try {
     console.log("📩 Assign worker for request ID:", requestId);
 
@@ -332,6 +331,11 @@ async function assignWorker(requestId) {
 
     const { success, data: workers } = await res.json();
     if (!success) throw new Error("Failed to fetch workers");
+
+    // Filter workers in same ward
+    const filteredWorkers = workers.filter(
+      (w) => w.WardNumber === memberWardNumber
+    );
 
     // Create modal overlay
     const modal = document.createElement("div");
@@ -355,15 +359,15 @@ async function assignWorker(requestId) {
       overflow-y: auto;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     `;
-    popup.innerHTML = `<h3> Assign Worker</h3>`;
+    popup.innerHTML = `<h3>Assign Worker</h3>`;
 
     const list = document.createElement("div");
     list.style.marginTop = "10px";
 
-    if (!workers || workers.length === 0) {
-      list.innerHTML = "<p>No available workers right now.</p>";
+    if (filteredWorkers.length === 0) {
+      list.innerHTML = "<p>No available workers in your ward right now.</p>";
     } else {
-      workers.forEach(w => {
+      filteredWorkers.forEach((w) => {
         const div = document.createElement("div");
         div.style.cssText = `
           display: flex;
@@ -393,7 +397,6 @@ async function assignWorker(requestId) {
       });
     }
 
-    // Close button
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "Close";
     closeBtn.style.cssText = `
@@ -457,6 +460,7 @@ async function assignWorker(requestId) {
           card.innerHTML = `
             <h3 style="margin:0;color:#04640A;">${u.Name}</h3>
             <p><strong>ID:</strong> ${u.User_ID}</p>
+            <p><strong>Ward Number:</strong> ${u.wardNumber}</p>
             <p><strong>Email:</strong> ${u.Email}</p>
             <p><strong>Role:</strong> ${u.Role}</p>
             <button class="reject" onclick="deleteUser('${u.User_ID}')">Delete User</button>`;
@@ -562,7 +566,7 @@ async function assignWorker(requestId) {
               <p><strong>Waste Type:</strong> ${req.WasteType}</p>
               <p><strong>Status:</strong> ${req.Status}</p>
               <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>
-              <button class="assign" onclick="assignWorker('${req.Request_ID}')">Assign Worker</button>
+              <button class="assign" onclick="assignWorker('${req.Request_ID}', ${req.WardNumber})">Assign Worker</button>
               <button class="reject" onclick="rejectRequest('Rejected', '${req.Request_ID}')">Reject Request</button>`;
             grid.appendChild(card);
           }

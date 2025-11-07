@@ -1,448 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <style>
-        body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color:#D6FFC3;
-}
-.sidebar {
-  width: 250px;
-  background-color:#04640A;
-  color: white;
-  position: fixed;
-  height: 100%;
-}
-.sidebar h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.sidebar a {
-  text-decoration: none;
-  color: white;
-  display: block;
-  padding: 10px 15px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-.sidebar a:hover {
-  background-color:rgb(2, 65, 6);
-}
-.main {
-  margin-left: 250px;
-  padding: 20px;
-}
-.header {body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #a9f7af;
-}
-.sidebar {
-  width: 250px;
-  background-color:rgb(1, 34, 3);
-  color: white;
-  position: fixed;
-  height: 100%;
-}
-.sidebar h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.sidebar a {
-  text-decoration: none;
-  color: white;
-  display: block;
-  padding: 10px 15px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-.sidebar a:hover {
-  background-color: #2e7d32;
-}
-.main {
-  margin-left: 250px;
-  padding: 20px;
-}
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  color:rgb(3, 44, 5);
-}
-.request-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.request-card {
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  border: black 1px solid;
-}
-.request-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  color:rgb(5, 51, 8);
-}
-.request-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.request-card {
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  border: black 1px solid;
-  height: 80px;
-}
-.request-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-.admin-profile-pic{
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-.admin-profile-pic:hover{
-  width: 110px;
-  height: 110px;
-  transition: all 0.2s ease;
-}
-.admin-profile{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.thin-green-line{
-  width: 100%;
-  height: 5px;
-  background-color:#149703;
-  margin: 0px 0;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
-  padding-top: 60px;
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 90%; 
-  max-width: 800px; 
-  height: 70%; 
-  max-height: 700px; 
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-}
-
-.modal-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.5em; 
-}
-
-.modal-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; 
-  font-size: 1.2em; 
-  padding: 10px; 
-}
-
-.close {
-  color: #aaa;
-  font-size: 1.5em; 
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.accept{
-    color: white;
-    background-color:Green;
-    border-radius:10px;
-    border: solid green;
-    width:80px;
-    height:50px;
-}
-.reject{
-    color: white;
-    background-color:Red;
-    border-radius:10px;
-    border: solid Red;
-    width:80px;
-    height:50px;
-}
-        </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #D6FFC3;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #04640A;
+      color: white;
+      position: fixed;
+      height: 100%;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .sidebar a:hover {
+      background-color: rgb(2, 65, 6);
+    }
+    .main {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      color: rgb(3, 44, 5);
+    }
+    .admin-profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .admin-profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .admin-profile-pic:hover {
+      width: 110px;
+      height: 110px;
+      transition: all 0.2s ease;
+    }
+    .thin-green-line {
+      width: 100%;
+      height: 5px;
+      background-color: #149703;
+      margin: 0px 0;
+    }
+    .accept {
+      color: white;
+      background-color: green;
+      border-radius: 10px;
+      border: solid green;
+      width: 80px;
+      height: 40px;
+      cursor: pointer;
+    }
+    .reject {
+      color: white;
+      background-color: red;
+      border-radius: 10px;
+      border: solid red;
+      width: 80px;
+      height: 40px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="admin-profile">
-            <h2>Dashboard</h2>
-            <img src="<%= session.member.profilePicture || 'https://placehold.co/80x80/4CAF50/FFFFFF?text=M' %>" class="admin-profile-pic" alt="member Profile Picture">
-            <h3><%= session.member.name %></h3>
-            <h5><%= session.member.houseName %></h5>
-            <a href="/member/memberEditProfile">Edit Profile</a>
-        </div>
-        <div class="thin-green-line"></div>
-        <div class="main-menu">
-            <a href="/member/memberdashboard">Home</a>
-        </div>
-        <div class="thin-green-line"></div>
-        <div class="sub-menu">
-            <a onclick="showForm('submitrequest')"> Submit Request</a>
-            <a onclick="showForm('submitfeedback')"> Submit Feedback</a>
-            <a onclick="loadWasteRequests(); showForm('Requests')">View Requests</a>
-            <a onclick="loadFeedback(); onclick=showForm('viewfeedback')"> View Feedback</a>
-            <a href="/home">Log Out</a>
-        </div>
+  <div class="sidebar">
+    <div class="admin-profile">
+      <h2>Dashboard</h2>
+      <img src="<%= session.member.profilePicture || 'https://placehold.co/80x80/4CAF50/FFFFFF?text=M' %>" class="admin-profile-pic" alt="Profile Picture" />
+      <h3><%= session.member.name %></h3>
+      <h5><%= session.member.houseName %></h5>
+      <a href="/member/memberEditProfile">Edit Profile</a>
+    </div>
+    <div class="thin-green-line"></div>
+    <div class="main-menu">
+      <a href="/member/memberdashboard">Home</a>
+    </div>
+    <div class="thin-green-line"></div>
+    <div class="sub-menu">
+      <a onclick="showForm('submitrequest')">Submit Request</a>
+      <a onclick="showForm('submitfeedback')">Submit Feedback</a>
+      <a onclick="loadWasteRequests(); showForm('Requests')">View Requests</a>
+      <a onclick="loadFeedback(); showForm('viewfeedback')">View Feedback</a>
+      <a href="/home">Log Out</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Submit Request Form -->
+    <div id="submit-request-form" style="display:none; margin-top:20px;">
+      <div class="header">
+        <h2>Submit Request</h2>
+      </div>
+      <form id="requestForm">
+        <input type="hidden" name="memberId" value="<%= session.member.id %>" />
+
+        <label>House Number:</label><br />
+        <input type="text" name="houseNumber" value="<%= session.member.houseNumber %>" readonly /><br /><br />
+
+        <label>Ward Number:</label><br />
+        <input type="text" name="wardNumber" value="<%= session.member.wardNumber %>" readonly /><br /><br />
+
+        <label>Waste Type:</label><br />
+        <select name="wasteType" required>
+          <option value="">--Select--</option>
+          <option value="Organic">Organic Waste</option>
+          <option value="Plastic">Plastic Waste</option>
+          <option value="Metal">Metal Waste</option>
+          <option value="Electronic">Electronic Waste</option>
+        </select><br /><br />
+
+        <label>Preferred Date Start:</label><br />
+        <input type="date" name="preferredDateStart" /><br /><br />
+
+        <label>Preferred Date End:</label><br />
+        <input type="date" name="preferredDateEnd" /><br /><br />
+
+        <button type="submit" class="accept">Submit</button>
+      </form>
     </div>
 
-    <div class="main">
-
-
-            <!-- Submit Request Form -->
-  <div id="submit-request-form" style="display:none; margin-top:20px;">
-    <div class="header">
-            <h2>Submit Request</h2>
-        </div>
-
-    <form action="/member/submitrequest" method="POST">
-
-     <input type="hidden" name="memberId" 
-       value="<%= session.member.id %>">
-
-    <label>House Number:</label><br>
-    <input type="text" name="houseNumber" 
-           value="<%= session.member.houseNumber %>" 
-           readonly><br><br>
-
-    <label>Ward Number:</label><br>
-    <input type="text" name="wardNumber" 
-           value="<%= session.member.wardNumber %>" 
-           readonly><br><br>
-
-      <label>Waste Type:</label><br>
-      <select name="wasteType" required>
-        <option value="">--Select--</option>
-        <option value="Organic">Organic Waste</option>
-        <option value="Plastic">Plastic Waste</option>
-        <option value="Metal">Metal Waste</option>
-        <option value="Electronic">Electronic Waste</option>
-      </select><br><br>
-
-      <div  name="preferreddatestart">
-        <label>PreferedDate Start:</label><br>
-        <input type="date" name="preferredDateStart"><br><br>
+    <!-- Submit Feedback Form -->
+    <div id="submit-feedback-form" style="display:none; margin-top:20px;">
+      <div class="header">
+        <h2>Submit Feedback</h2>
       </div>
-      <div  name="preferreddateend">
-        <label>PreferedDate End:</label><br>
-        <input type="date" name="preferredDateEnd"><br><br>
-      </div>
+      <form id="feedbackForm">
+        <input type="hidden" name="memberId" value="<%= session.member.id %>" />
 
-      <button type="submit" class="accept">Submit Request</button>
-    </form>
-  </div>
+        <label>House Number:</label><br />
+        <input type="text" name="houseNumber" value="<%= session.member.houseNumber %>" readonly /><br /><br />
 
-<!-- Submit Feedback Form -->
-<div id="submit-feedback-form" style="display:none; margin-top:20px;">
-  <div class="header">
-    <h2>Submit Feedback</h2>
-  </div>
+        <label>Ward Number:</label><br />
+        <input type="text" name="wardNumber" value="<%= session.member.wardNumber %>" readonly /><br /><br />
 
-  <form action="/member/submitfeedback" method="POST">
+        <label>Date:</label><br />
+        <input type="date" name="datesubmitted" required /><br /><br />
 
-    <input type="hidden" name="memberId" 
-       value="<%= session.member.id %>">
+        <label>Comment:</label><br />
+        <textarea name="comment" required></textarea><br /><br />
 
-    <label>House Number:</label><br>
-    <input type="text" name="houseNumber" 
-           value="<%= session.member.houseNumber %>" 
-           readonly><br><br>
+        <button type="submit" class="accept">Submit</button>
+      </form>
+    </div>
 
-    <label>Ward Number:</label><br>
-    <input type="text" name="wardNumber" 
-           value="<%= session.member.wardNumber %>" 
-           readonly><br><br>
+    <!-- View Feedback -->
+    <div id="view-feedback-form" style="display:none; margin-top:20px;">
+      <div class="header"><h2>View Feedback</h2></div>
+      <div id="view-feedback"></div>
+    </div>
 
-    <label>Date:</label><br>
-    <input type="date" name="datesubmitted" required><br><br>
-
-    <label>Comment:</label><br>
-    <textarea name="comment" required></textarea><br><br>
-
-    <button type="submit" class="accept">Submit Feedback</button>
-  </form>
-</div>
-
-            <!-- View Feedback -->
-  <div id="view-feedback-form" style="display:none; margin-top:20px;">
-    <div class="header">
-            <h2>View Feedback</h2>
-        </div>
-    <div id="view-feedback"></div>
-  </div>
-
-      <!-- View Requests -->
+    <!-- View Requests -->
     <div id="view-requests-form" style="display:none; margin-top:20px;">
       <div class="header"><h2>View Requests</h2></div>
       <div id="view-requests"></div>
     </div>
-
   </div>
 
   <script>
-
-      function showForm(type) {
-    document.getElementById("submit-request-form").style.display =
-      type === "submitrequest" ? "block" : "none";
-
-    document.getElementById("submit-feedback-form").style.display =
-      type === "submitfeedback" ? "block" : "none";
-
-          document.getElementById("view-feedback-form").style.display =
-      type === "viewfeedback" ? "block" : "none";
-
-      document.getElementById("view-requests-form").style.display = 
-       type === "Requests" ? "block" : "none";
-  }
-
-
-// view feedback
-async function loadFeedback() {
-  const container = document.getElementById("view-feedback");
-  container.innerHTML = "<p>⏳ Loading feedback...</p>";
-
-  try {
-    const res = await fetch("/member/viewfeedback");
-    if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
-    const { data: feedback } = await res.json();
-
-    if (!feedback || feedback.length === 0) {
-      container.innerHTML = "<p>No feedback found.</p>";
-      return;
+    function showForm(type) {
+      document.getElementById("submit-request-form").style.display = type === "submitrequest" ? "block" : "none";
+      document.getElementById("submit-feedback-form").style.display = type === "submitfeedback" ? "block" : "none";
+      document.getElementById("view-feedback-form").style.display = type === "viewfeedback" ? "block" : "none";
+      document.getElementById("view-requests-form").style.display = type === "Requests" ? "block" : "none";
     }
 
-    // Create a grid container
-    const grid = document.createElement("div");
-    grid.style.display = "grid";
-    grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(300px, 1fr))";
-    grid.style.gap = "15px";
-    grid.style.marginTop = "20px";
+    // Submit Request using JS
+    document.getElementById("requestForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
 
-    feedback.forEach(fb => {
-      const card = document.createElement("div");
-      card.style.background = "white";
-      card.style.border = "1px solid #ccc";
-      card.style.borderRadius = "10px";
-      card.style.padding = "15px";
-      card.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-      card.style.transition = "transform 0.2s ease";
-
-      card.innerHTML = `
-        <h3 style="margin:0; color:#04640A;">${fb.MemberName}</h3>
-        <p><strong>Waste Type:</strong> ${fb.WasteType}</p>
-        <p><strong>Comments:</strong> ${fb.Comments || "No comments"}</p>
-        <p><strong>Submitted:</strong> ${fb.DateSubmitted}</p>
-      `;
-
-      card.addEventListener("mouseenter", () => {
-        card.style.transform = "scale(1.03)";
-      });
-
-      card.addEventListener("mouseleave", () => {
-        card.style.transform = "scale(1)";
-      });
-
-      grid.appendChild(card);
+      try {
+        const res = await fetch("/member/submitrequest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (res.ok) alert("✅ Request submitted successfully!");
+        else alert(`❌ Failed: ${result.message || "Unknown error"}`);
+      } catch (err) {
+        alert("❌ Error submitting request: " + err.message);
+      }
     });
 
-    container.innerHTML = "";
-    container.appendChild(grid);
-  } catch (err) {
-    console.error("❌ Error loading feedback:", err);
-    container.innerHTML = `<p style="color:red;">Failed to load feedback. Please try again.</p>`;
-  }
-}
+    // Submit Feedback using JS
+    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
 
-
-async function loadWasteRequests() {
-      const container = document.getElementById("view-requests");
-      container.innerHTML = "<p>⏳ Loading waste requests...</p>";
       try {
-        const res = await fetch("/member/viewrequests");
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        const json = await res.json();
-        const requests = json.data || [];
-        if (!requests.length) {
-          container.innerHTML = "<p>No waste requests found.</p>";
-          return;
-        }
-        const grid = document.createElement("div");
-        grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;margin-top:20px;";
-        requests.forEach(req => {
-          const card = document.createElement("div");
-          card.style.cssText = "background:#fff;border:1px solid #ddd;border-radius:10px;padding:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);transition:transform 0.2s ease,box-shadow 0.2s ease;";
-          card.innerHTML = `
-            <h3 style="margin:0;color:#04640A;">Request #${req.Request_ID}</h3>
-            <p><strong>Member:</strong> ${req.MemberName || "Unknown"}</p>
-            <p><strong>House:</strong> ${req.HouseNumber || "N/A"} | <strong>Ward:</strong> ${req.WardNumber || "N/A"}</p>
-            <p><strong>Waste Type:</strong> ${req.WasteType}</p>
-            <p><strong>Status:</strong> ${req.Status}</p>
-            <p><strong>Assigned Worker:</strong> ${req.WorkerName ? `${req.WorkerName} (ID: ${req.Worker_ID})` : "Not assigned"}</p>`;
-          grid.appendChild(card);
+        const res = await fetch("/member/submitfeedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         });
-        container.innerHTML = "";
-        container.appendChild(grid);
+        const result = await res.json();
+        if (res.ok) alert("✅ Feedback submitted successfully!");
+        else alert(`❌ Failed: ${result.message || "Unknown error"}`);
       } catch (err) {
-        console.error("Error loading requests:", err);
-        container.innerHTML = `<p style="color:red;">Failed to load requests.</p>`;
+        alert("❌ Error submitting feedback: " + err.message);
+      }
+    });
+
+    // Load Feedback
+    async function loadFeedback() {
+      const container = document.getElementById("view-feedback");
+      container.innerHTML = "⏳ Loading feedback...";
+      try {
+        const res = await fetch("/member/viewfeedback");
+        const json = await res.json();
+        const feedback = json.data || [];
+        if (!feedback.length) return (container.innerHTML = "No feedback found.");
+        container.innerHTML = feedback
+          .map(
+            (f) => `
+          <div style="background:white;border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px;">
+            <h3 style="color:#04640A;">${f.MemberName}</h3>
+            <p><strong>Waste Type:</strong> ${f.WasteType}</p>
+            <p><strong>Comment:</strong> ${f.Comments}</p>
+            <p><strong>Date:</strong> ${f.DateSubmitted}</p>
+          </div>`
+          )
+          .join("");
+      } catch (err) {
+        alert("❌ Error loading feedback: " + err.message);
       }
     }
 
+    // Load Requests
+    async function loadWasteRequests() {
+      const container = document.getElementById("view-requests");
+      container.innerHTML = "⏳ Loading requests...";
+      try {
+        const res = await fetch("/member/viewrequests");
+        const json = await res.json();
+        const requests = json.data || [];
+        if (!requests.length) return (container.innerHTML = "No requests found.");
+        container.innerHTML = requests
+          .map(
+            (r) => `
+          <div style="background:white;border:1px solid #ccc;padding:10px;border-radius:8px;margin-bottom:10px;">
+            <h3 style="color:#04640A;">Request #${r.Request_ID}</h3>
+            <p><strong>Member:</strong> ${r.MemberName}</p>
+            <p><strong>Waste Type:</strong> ${r.WasteType}</p>
+            <p><strong>Status:</strong> ${r.Status}</p>
+          </div>`
+          )
+          .join("");
+      } catch (err) {
+        alert("❌ Error loading requests: " + err.message);
+      }
+    }
   </script>
-
 </body>
 </html>

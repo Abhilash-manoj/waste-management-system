@@ -296,21 +296,51 @@
                 </form>
             </section>
 
-            <section class="card security-card">
-                <h2>Security & Credentials</h2>
-                
-                <div class="password-reset-block">
-                    <h3>🔒 Change Password</h3>
-                    <button id="reset-password-btn" class="button secondary-button">Send Password Reset Link</button>
-                    <p id="reset-status" class="status-message"></p>
-                </div>
+          <section class="card security-card">
+  <h2>Security & Credentials</h2>
 
-            </section>
+  <div class="password-reset-block">
+    <h3>🔒 Change Password</h3>
+
+    <form id="change-password-form" method="POST">
+      <div class="input-group">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" name="currentPassword" required>
+      </div>
+
+      <div class="input-group">
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" name="newPassword" required>
+      </div>
+
+      <div class="input-group">
+        <label for="confirm-password">Confirm New Password</label>
+        <input type="password" id="confirm-password" name="confirmPassword" required>
+      </div>
+
+      <button type="submit" class="button primary-button">Update Password</button>
+      <p id="password-status" class="status-message"></p>
+    </form>
+  </div>
+</section>
+
 
         </main>
     </div>
 
     <script>
+
+        
+        const hasLower = /[a-z]/.test(pass);
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
+        const isLongEnough = pass.length >= 6;
+
+        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
+          errors.push("Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character.");
+        }
+
+        
         document.getElementById('profile-form').addEventListener('submit', async function(e) {
             e.preventDefault(); 
             
@@ -351,16 +381,46 @@
         });
 
 
-        document.getElementById('reset-password-btn').addEventListener('click', function() {
-            const statusMessage = document.getElementById('reset-status');
-            const userEmail = document.getElementById('email-address').value; 
-            statusMessage.textContent = 'Sending secure link...';
-            statusMessage.style.color = '#007bff';
-            setTimeout(() => {
-                statusMessage.textContent = `SUCCESS: A password reset link has been sent to ${userEmail}!`;
-                statusMessage.style.color = 'green';
-            }, 2000); 
-        });
+document.getElementById('change-password-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const statusMsg = document.getElementById('password-status');
+  const currentPassword = document.getElementById('current-password').value.trim();
+  const newPassword = document.getElementById('new-password').value.trim();
+  const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+  if (newPassword !== confirmPassword) {
+    statusMsg.textContent = "❌ New passwords do not match!";
+    statusMsg.className = "status-error";
+    return;
+  }
+
+  try {
+    statusMsg.textContent = "Updating password...";
+    statusMsg.className = "";
+
+    const response = await fetch("/member/changePassword", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      statusMsg.textContent = "✅ Password updated successfully!";
+      statusMsg.className = "status-success";
+      this.reset();
+    } else {
+      throw new Error(result.message || "Failed to update password.");
+    }
+  } catch (err) {
+    console.error("❌ Password update error:", err);
+    statusMsg.textContent = err.message;
+    statusMsg.className = "status-error";
+  }
+});
+
 
         const toggle = document.getElementById('notification-toggle');
         const emailContainer = document.getElementById('email-input-container');

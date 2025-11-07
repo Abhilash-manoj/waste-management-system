@@ -192,14 +192,6 @@
           errors.push("Ward Number must be numeric.");
         }
 
-        const hasLower = /[a-z]/.test(pass);
-        const hasUpper = /[A-Z]/.test(pass);
-        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
-        const isLongEnough = pass.length >= 6;
-
-        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
-          errors.push("Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character.");
-        }
 
         if (errors.length > 0) {
           e.preventDefault();

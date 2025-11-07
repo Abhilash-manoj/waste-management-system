@@ -1,6 +1,6 @@
 import express from "express";
-import multer from "multer"; // 1. Import multer
-import path from "path";     // 2. Import path
+import multer from "multer"; 
+import path from "path";     
 import Member from "../models/member.js";
 import MemberController from "../controllers/memberController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
@@ -66,6 +66,8 @@ router.post(
   uploadWithErrorHandler,
   (req, res) => memberController.updateProfile(req, res)
 );
+
+router.post("/changePassword", memberController.changePassword);
 
 // ✅ Submit waste request
 router.post(
