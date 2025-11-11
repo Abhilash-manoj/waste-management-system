@@ -5,58 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Member Login</title>
   <style>
+
+    /* Admin-style centered layout */
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #2e7d32, #1b5e20);
+      background-color: #f7f7f7;
       display: flex;
-      flex-wrap: wrap;
-      min-height: 100vh;
+      height: 100vh;
       justify-content: center;
       align-items: center;
-      background-image: url("/images/harithamithram.png");
-      background-repeat: no-repeat;
-      background-size: 1000px;
-      background-position: bottom left;
-      background-color: #083f03;
-    }
-
-    .left-section {
-      flex: 1 1 300px;
-      color: white;
-      padding: 40px;
-      box-sizing: border-box;
-    }
-
-    .left-section h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .left-section p {
-      font-size: 1rem;
-      max-width: 400px;
     }
 
     .container {
-      flex: 1 1 400px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
     }
 
     .login-card {
-      position: relative;
       background: white;
-      padding: 40px;
-      max-width: 500px;
-      width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 56px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-align: center;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .header-content {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .logo-icon {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background-color: #388e3c;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      line-height: 50px;
+      font-size: 25px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+
+    .page-heading {
+      margin-top: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1b5e20;
     }
 
     .login-card h2 {
@@ -104,6 +114,17 @@
       background: #2e7d32;
     }
 
+    .error-message {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .input-error {
+      border-color: #dc3545 !important;
+    }
+
     .back {
       position: absolute;
       text-decoration: none;
@@ -134,33 +155,34 @@
   </style>
 </head>
 <body>
-  <div class="left-section">
-    <h1>Haritha Keralam Mission</h1>
-    <p>Progress is impossible without change, and those who cannot change their minds cannot change anything</p>
-  </div>
   <div class="container">
-    <form class="login-card" id="loginForm" action="/member/memberlogin" method="POST">
+    <form class="login-card" id="loginForm" action="/member/memberlogin" method="POST" novalidate>
       <a href="/home" class="back">&lArr;</a>
-      <h1>Log In</h1>
-      <h2>Member</h2>
+      <div class="header-content">
+        <div class="logo-icon">♻️</div>
+        <p class="header-title">Waste-Management System</p>
+        <div class="page-heading">Member Login</div>
+      </div>
 
       <div class="input-group">
         <label for="housenumber">House Number</label>
-        <input type="text" name="housenumber" id="housenumber" placeholder="Enter HouseNumber" required />
+        <input type="text" name="housenumber" id="housenumber" placeholder="Enter HouseNumber" />
+        <div id="housenumberError" class="error-message"></div>
       </div>
 
       <div class="input-group">
         <label for="wardnumber">Ward Number</label>
         <input type="text" name="wardnumber" id="wardnumber" placeholder="Enter WardNumber" required />
+        <div id="wardnumberError" class="error-message"></div>
       </div>
 
       <div class="input-group">
         <label for="pass">Password</label>
         <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+        <div id="passError" class="error-message"></div>
       </div>
 
-      <a class="forgot" href="/memberforgotpassword">Forgot Password</a>
-      <button type="submit" class="login-btn">Submit</button>
+  <button type="submit" class="login-btn">Submit</button>
     </form>
   </div>
 
@@ -182,21 +204,75 @@
         const house = this.houseInput.value.trim();
         const ward = this.wardInput.value.trim();
         const pass = this.passInput.value.trim();
-        let errors = [];
+        let hasErrors = false;
 
-        if (!house.match(/^[A-Za-z0-9\-\/]+$/)) {
-          errors.push("House Number contains invalid characters.");
+        // Reset previous errors
+        this.resetErrors();
+
+        // House number validation
+        if (!house) {
+          this.showError('housenumber', 'House Number is required');
+          hasErrors = true;
+        } else if (!house.match(/^[A-Za-z0-9\-\/]+$/)) {
+          this.showError('housenumber', 'House Number contains invalid characters');
+          hasErrors = true;
+        }
+
+        // Ward number validation
+        if (!ward) {
+          this.showError('wardnumber', 'Ward Number is required');
+          hasErrors = true;
+        } else if (!ward.match(/^\d+$/)) {
+          this.showError('wardnumber', 'Ward Number must be numeric');
+          hasErrors = true;
+        }
+
+        // Password validation
+        if (!pass) {
+          this.showError('pass', 'Password is required');
+          hasErrors = true;
         }
 
         if (!ward.match(/^\d+$/)) {
-          errors.push("Ward Number must be numeric.");
+          this.showError('wardnumber', 'Ward Number must be numeric');
+          hasErrors = true;
         }
 
+        const hasLower = /[a-z]/.test(pass);
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pass);
+        const isLongEnough = pass.length >= 6;
 
-        if (errors.length > 0) {
+        if (!isLongEnough || !hasLower || !hasUpper || !hasSpecial) {
+          this.showError('pass', 'Password must be at least 6 characters and include a lowercase letter, uppercase letter, and special character');
+          hasErrors = true;
+        }
+
+        if (hasErrors) {
           e.preventDefault();
-          alert(errors.join("\\n"));
         }
+      }
+
+      showError(field, message) {
+        const input = document.getElementById(field);
+        const errorDiv = document.getElementById(field + 'Error');
+        if (input && errorDiv) {
+          input.classList.add('input-error');
+          errorDiv.textContent = message;
+          errorDiv.style.display = 'block';
+        }
+      }
+
+      resetErrors() {
+        ['housenumber', 'wardnumber', 'pass'].forEach(field => {
+          const input = document.getElementById(field);
+          const errorDiv = document.getElementById(field + 'Error');
+          if (input && errorDiv) {
+            input.classList.remove('input-error');
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+          }
+        });
       }
     }
 
