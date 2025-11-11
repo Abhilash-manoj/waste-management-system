@@ -5,52 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Worker Login</title>
   <style>
+    /* Admin-style centered layout */
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
       display: flex;
       height: 100vh;
       justify-content: center;
       align-items: center;
-      background-image: url("/components/workerlogin.jpg");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-      background-color: #DFF1F1;
-    }
-
-    .left-section {
-      flex: 1;
-      color: black;
-      padding: 50px;
-    }
-
-    .left-section h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .left-section p {
-      font-size: 1rem;
-      max-width: 400px;
     }
 
     .container {
-      flex: 1;
       display: flex;
       justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
     }
 
     .login-card {
       background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 56px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-align: center;
       width: 100%;
-      max-width: 400px;
+      max-width: 480px;
       position: relative;
+    }
+
+    .header-content {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .logo-icon {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background-color: #388e3c;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      line-height: 50px;
+      font-size: 25px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+
+    .page-heading {
+      margin-top: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1b5e20;
     }
 
     .input-group {
@@ -94,6 +109,17 @@
       background: #2e7d32;
     }
 
+    .error-message {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .input-error {
+      border-color: #dc3545 !important;
+    }
+
     .back {
       position: absolute;
       text-decoration: none;
@@ -106,28 +132,27 @@
   </style>
 </head>
 <body>
-  <div class="left-section">
-    <h1>Haritha Keralam Mission</h1>
-    <p>Growth requires adaptation, and those who refuse to evolve remain stagnant</p>
-  </div>
-
 <div class="container">
-  <form class="login-card" id="workerLoginForm" action="/worker/workerlogin" method="POST">
+  <form class="login-card" id="workerLoginForm" action="/worker/workerlogin" method="POST" novalidate>
     <a href="/home" class="back">&lArr;</a>
-    <h1>Log In</h1>
-    <h2>Worker</h2>
+    <div class="header-content">
+      <div class="logo-icon">♻️</div>
+      <p class="header-title">Waste-Management System</p>
+      <div class="page-heading">Worker Login</div>
+    </div>
 
     <div class="input-group">
       <label for="email">Email</label>
-      <input type="text" name="email" id="email" placeholder="Enter Email" required />
+      <input type="email" name="email" id="email" placeholder="Enter Email" />
+      <div id="emailError" class="error-message"></div>
     </div>
 
     <div class="input-group">
       <label for="pass">Password</label>
       <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
+      <div id="passError" class="error-message"></div>
     </div>
 
-    <a class="forgot" href="/workerforgotpassword">Forgot Password</a>
     <button type="submit" class="login-btn">Submit</button>
   </form>
 </div>
@@ -148,31 +173,75 @@
     validateForm(e) {
       const email = this.emailInput.value.trim();
       const pass = this.passInput.value.trim();
-      let errors = [];
+      let hasErrors = false;
+
+      // Reset previous errors
+      this.resetErrors();
 
       // ✅ Email validation
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        errors.push("Please enter a valid email address.");
+      if (!email) {
+        this.showError('email', 'Email is required');
+        hasErrors = true;
+      } else {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          this.showError('email', 'Please enter a valid email address (e.g., example@domain.com)');
+          hasErrors = true;
+        } else if (!email.toLowerCase().endsWith('.com')) {
+          this.showError('email', 'Email must end with .com');
+          hasErrors = true;
+        }
       }
 
       // ✅ Password validation
-      const hasLower = /[a-z]/.test(pass);
-      const hasUpper = /[A-Z]/.test(pass);
-      const hasNumber = /\d/.test(pass);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
-      const isLongEnough = pass.length >= 6;
+      if (!pass) {
+        this.showError('pass', 'Password is required');
+        hasErrors = true;
+      } else {
+        const hasLower = /[a-z]/.test(pass);
+        const hasUpper = /[A-Z]/.test(pass);
+        const hasNumber = /\d/.test(pass);
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+        const isLongEnough = pass.length >= 6;
 
-      if (!isLongEnough || !hasLower || !hasUpper || !hasNumber || !hasSpecial) {
-        errors.push(
-          "Password must be at least 6 characters long and include uppercase, lowercase, number, and special character."
-        );
+        if (!isLongEnough || !hasLower || !hasUpper || !hasNumber || !hasSpecial) {
+          let errors = [];
+          if (!isLongEnough) errors.push('be at least 6 characters long');
+          if (!hasLower) errors.push('include a lowercase letter');
+          if (!hasUpper) errors.push('include an uppercase letter');
+          if (!hasNumber) errors.push('include a number');
+          if (!hasSpecial) errors.push('include a special character');
+          
+          this.showError('pass', 'Password must ' + errors.join(', '));
+          hasErrors = true;
+        }
       }
 
-      if (errors.length > 0) {
+      if (hasErrors) {
         e.preventDefault();
-        alert(errors.join("\n"));
       }
+    }
+
+    showError(field, message) {
+      const input = document.getElementById(field);
+      const errorDiv = document.getElementById(field + 'Error');
+      if (input && errorDiv) {
+        input.classList.add('input-error');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    resetErrors() {
+      ['email', 'pass'].forEach(field => {
+        const input = document.getElementById(field);
+        const errorDiv = document.getElementById(field + 'Error');
+        if (input && errorDiv) {
+          input.classList.remove('input-error');
+          errorDiv.style.display = 'none';
+          errorDiv.textContent = '';
+        }
+      });
     }
   }
 

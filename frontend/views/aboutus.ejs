@@ -5,119 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haritha Kerala Mission</title>
     <style>
+        :root {
+    --primary-color: #1b5e20;
+    --secondary-color: #2e7d32;
+    --accent-color: #43a047;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --background-light: #f5f5f5;
+    --background-dark: #004d40;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
         body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #011502;
-    color: white;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--background-light);
+    color: var(--text-dark);
+    line-height: 1.6;
 }
 
 .container {
-    background-image: url(../components/main.jpeg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../components/main.jpeg);
     background-repeat: no-repeat;
-    background-position: -20px -250px;
+    background-position: center;
     background-size: cover;
-    width: 1364px;
-    height: 500px;
-    margin: 0 auto;
+    width: 100%;
+    height: 600px;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
-
-.nav-bar {
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    padding: 0px 20px;
-    position: relative; 
-    padding-bottom: 30px;
-}
+/* Navigation Bar */
 .nav-bar {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .nav-link {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 20px;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
 }
 
 .nav-link a {
     text-decoration: none;
-    color: green;
-    font-size: 18px;
+    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.nav-link a:hover {
+    color: var(--secondary-color);
+    background-color: rgba(46, 125, 50, 0.1);
 }
 
 .dropdown {
     position: relative;
-    margin-left: 20px;
+    margin-left: auto;
+    z-index: 10;
 }
 
 .dropdown button {
-    background: black;
-    color: white;
-    margin-right: 10px;
-    border: solid 2px black;
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: none;
     height: 40px;
-    width: 80px;
-    padding: 10px;
+    width: 100px;
+    padding: 8px 16px;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 4px;
     font-size: 15px;
+    font-weight: 500;
+    display: block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.dropdown button {
+    position: relative;
+    z-index: 1100;
+}
+
+.dropdown button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
-    border: #011502;
-    border-radius: 10px;
-    top: 41px;
-    right: 5px;
+    border: none;
+    border-radius: 4px;
+    top: calc(100% - 2px);
+    right: 0;
     background-color: white;
-    min-width: 80px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    min-width: 180px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    z-index: 2000;
+    overflow: hidden;
 }
 
 .dropdown-content a {
     display: block;
-    size: 10px;
-    padding: 10px;
+    padding: 12px 20px;
     text-decoration: none;
-    color: black;
+    color: var(--text-dark);
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 .dropdown-content a:hover {
-    background: lightgray;
-    border: #011502;
-    border-radius: 10px;
+    background: var(--background-light);
+    color: var(--primary-color);
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content,
+.dropdown:focus-within .dropdown-content {
+    display: block;
+}
+
+/* keyboard accessibility */
+.dropdown button:focus + .dropdown-content,
+.dropdown:focus-within .dropdown-content {
+    display: block;
+}
+
+/* keyboard accessibility */
+.dropdown button:focus + .dropdown-content,
+.dropdown:focus-within .dropdown-content {
     display: block;
 }
 
 
 .hero {
-    text-align: left;
-    padding: 10px;
-    margin-top: 100px;
+    text-align: center;
+    padding: 120px 20px;
+    color: var(--text-light);
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
 }
 
 .hero h1 {
-    font-size: 48px;
-    margin: 5px;
+    font-size: 56px;
+    margin: 0 0 20px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
+    color: var(--text-light);
 }
 
 .hero h2 {
-    font-size: 36px;
-    margin: 5px;
+    font-size: 32px;
+    margin: 0 0 30px;
+    font-weight: 500;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .hero p {
-    font-size: 24px;
-    margin: 5px;
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.95);
 }
 
 .hero h1, 
@@ -136,58 +209,72 @@
 
 .aboutus {
     width: 80%;
-    margin: 50px;
+    margin: 50px auto;
     padding: 40px;
     border-radius: 10px;
     text-align: justify;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+    overflow: hidden;
+    position: relative;
 }
-
 
 .aboutus h1 {
     margin-top: 10px;
     font-size: 32px;
-    color: #0aa005;
+    color: var(--text-light);
     text-align: center;
     margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 
 .aboutus p {
     font-size: 18px;
-    color: #ebe8e8;
+    color: rgba(255, 255, 255, 0.95);
     line-height: 1.6;
     margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 
-.aboutus-img1 {
-    float: left;
+.aboutus-img1, .aboutus-img2, .aboutus-img3 {
+    display: block;
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     height: auto;
-    margin: 20px;
+    margin: 30px auto;
     border-radius: 10px;
-    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.aboutus-img2 {
-    float: right;
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    margin: 20px;
-    border-radius: 10px;
-    padding: 10px;
+.aboutus p {
+    display: flow-root;
+    margin-bottom: 30px;
 }
 
-.aboutus-img3 {
-    float: left;
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    margin: 20px;
-    border-radius: 10px;
-    padding: 10px;
+.aboutus p::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+@media (min-width: 768px) {
+    .aboutus-img1 {
+        float: left;
+        width: 45%;
+        margin: 5px 30px 20px 0;
+    }
+
+    .aboutus-img2 {
+        float: right;
+        width: 45%;
+        margin: 5px 0 20px 30px;
+    }
+
+    .aboutus-img3 {
+        float: left;
+        width: 45%;
+        margin: 5px 30px 20px 0;
+    }
 }
 
 
@@ -236,6 +323,133 @@ footer {
     text-decoration: underline;
 }
 
+    /* Footer Styles */
+    footer {
+        background: linear-gradient(135deg, var(--primary-color), var(--background-dark));
+        color: var(--text-light);
+        padding: 60px 0 40px;
+        margin-top: 40px;
+        box-shadow: 0 -4px 12px var(--shadow-color);
+    }
+
+    .footer-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+        gap: 60px;
+    }
+
+    .footer-left,
+    .footer-right {
+        width: 50%;
+    }
+
+    .footer-left h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .footer-left img {
+        width: 32px;
+        height: 32px;
+        margin-right: 15px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        opacity: 0.9;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 6px;
+        border-radius: 50%;
+    }
+
+    .footer-left img:hover {
+        transform: translateY(-3px);
+        opacity: 1;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .footer-left p {
+        font-size: 15px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 8px 0;
+    }
+
+    .footer-right p {
+        font-size: 15px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .footer-left a {
+        text-decoration: none;
+        color: #81C784;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .footer-left a:hover {
+        color: #A5D6A7;
+        text-decoration: underline;
+    }
+
+    /* About Us Content Styles */
+    .about-section {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 40px;
+    }
+
+    .about-content {
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    .about-content h2 {
+        color: var(--text-dark);
+        margin-bottom: 30px;
+        font-size: 32px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .about-content p {
+        color: var(--text-dark);
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .mission-section {
+        display: flex;
+        gap: 40px;
+        margin: 40px 0;
+        align-items: center;
+    }
+
+    .mission-text {
+        flex: 1;
+    }
+
+    .mission-image {
+        flex: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    .mission-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
     </style>
 </head>
 <body>
@@ -272,8 +486,8 @@ footer {
         <p>
            
            Haritha Keralam Mission is one of the four missions formed by the state government to build a New Kerala. 
-           The Mission was launched on December 8, 2016 with the aim of promoting cleanliness, water abundance, water security and safe food production.
-           <img class="aboutus-img1" src="../components/aboutus3.jpg" alt="Image 1">
+           The Mission was launched on December 8, 2016 with the aim of promoting cleanliness, water abundance, water security and safe food production.</p>
+           <p><img class="aboutus-img1" src="../components/aboutus3.jpg" alt="Image 1">
            The Haritha Keralam Mission has already been able to create remarkable changes in various sectors related to ensuring environmental aspects of the state.
            The Mission's objectives are clear in its unique motto of Water, Hygiene and Harvest. Haritha Keralam Mission consists of three sub-missions related to Water Conservation, Sanitation and Waste Management and Agriculture. 
            Mission activities are carried out practically under the leadership of local self-government bodies. Haritha Keralam Mission works as a coordination support system connecting various departments and agencies with local self-government bodies.

@@ -5,131 +5,307 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Login</title>
   <style>
+    /* ---------------------------------- */
+    /* NEW CSS TO MATCH THE SCREENSHOT */
+    /* ---------------------------------- */
     body {
       margin: 0;
       padding: 0;
+      /* Use a soft, light background color like the image */
+      background-color: #f7f7f7; 
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
       justify-content: center;
       align-items: center;
-      background-image: url("/components/adminlogin.webp");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-      background-color: #FAFBF8;
+      background-image: none; /* Removed background image */
     }
 
-    .left-section {
-      flex: 1;
-      color: black;
-      padding: 50px;
-    }
-
-    .left-section h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .left-section p {
-      font-size: 1rem;
-      max-width: 400px;
-    }
-
+    /* Removed .left-section, as the design is centered */
     .container {
-      flex: 1;
+      /* The container is now the main element, centering the card */
       display: flex;
       justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
     }
 
     .login-card {
       background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 56px;
+      /* Adjusted border-radius for a softer look */
+      border-radius: 12px;
+      /* Lighter, softer shadow */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
       text-align: center;
       width: 100%;
-      max-width: 400px;
+      max-width: 400px; /* Kept max-width */
+      position: relative;
     }
 
-    .login-card h1,
-    .login-card h2 {
-      margin-bottom: 20px;
+    /* Styles for the header content (Icon and Text) */
+    .header-content {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .logo-icon {
+      /* Styling for the Recycle/Waste Management icon */
+      display: inline-block;
+      width: 50px; 
+      height: 50px;
+      background-color: #388e3c; /* Green background for the icon */
+      border-radius: 50%;
+      margin-bottom: 10px;
+      /* A simple text representation of the icon. You'd replace this with an actual image or SVG */
+      line-height: 50px; 
+      font-size: 25px;
+      color: white;
+      font-weight: bold;
     }
 
+    .header-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+    }
+
+    .header-subtitle {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 5px 0 0 0;
+    }
+
+  .page-heading {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1b5e20;
+  }
+
+    /* Removed h1/h2 from the card as the new structure uses the header-content */
+
+    /* Input Fields and Groups */
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       text-align: left;
     }
 
     .input-group label {
       display: block;
       font-size: 14px;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .input-field-wrapper {
+        position: relative;
     }
 
     .input-group input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      padding: 12px;
+      /* Light grey border, matching the screenshot */
+      border: 1px solid #ddd; 
+      border-radius: 8px;
+      box-sizing: border-box; /* Important for padding/width calculation */
+      font-size: 16px;
+      /* Remove default outline/shadow on focus */
+      outline: none; 
+      transition: border-color 0.2s;
     }
-
+    
+    .input-group input:focus {
+        border-color: #388e3c;
+    }
+    
+    /* Login Button */
     .login-btn {
       width: 100%;
-      padding: 10px;
-      background: #388e3c;
+      padding: 12px;
+      /* Darker green color from the screenshot */
+      background: #1e7e34; 
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+      margin-top: 10px; /* Add some space above the button */
+      transition: background 0.3s;
     }
 
     .login-btn:hover {
-      background: #2e7d32;
+      background: #165e24; /* Slightly darker on hover */
     }
 
-    .back {
-      position: absolute;
-      text-decoration: none;
-      color: rgb(12, 12, 12);
-      font-weight: bold;
-      top: 20px;
-      left: 20px;
-      font-size: 35px;
+    /* Toggle visibility icon in password field */
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #999;
     }
+
+    /* 'Forgot Password' link */
+    .forgot-password {
+    display: block;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #1e7e34; /* Green color for link */
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+    /* Back arrow style cleanup (removed the old back style) */
+    .back {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 24px;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .back:hover {
+        color: #1e7e34;
+    }
+
+    /* Error Message Styling */
+    .error-message {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    /* Error popup modal */
+    .error-popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .error-popup {
+      background: white;
+      color: #222;
+      padding: 20px 24px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      max-width: 420px;
+      width: calc(100% - 40px);
+      text-align: left;
+      position: relative;
+    }
+
+    .error-popup h3 {
+      margin: 0 0 8px 0;
+      color: #c62828;
+      font-size: 18px;
+    }
+
+    .error-popup p {
+      margin: 0 0 12px 0;
+      color: #444;
+    }
+
+    .error-popup .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .input-error {
+      border-color: #dc3545 !important;
+    }
+
+    /* Login/Signup Tabs (Mimicking the visual element) */
+    .auth-tabs {
+        display: flex;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        padding: 4px;
+    }
+
+    .auth-tab {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+
+    .auth-tab.active {
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    .auth-tab.inactive {
+        color: #666;
+    }
+
+
   </style>
 </head>
 <body>
-  <div class="left-section">
-    <h1>Haritha Keralam Mission</h1>
-    <p>The mind that welcomes new ideas opens the door to endless possibilities.</p>
-  </div>
-
+  
   <% if (typeof error !== 'undefined') { %>
-  <div class="error-popup"><%= error %></div>
-<% } %>
-
-<div class="container">
-  <form class="login-card" id="adminLoginForm" action="/admin/adminlogin" method="POST">
-    <a href="/home" class="back">&lArr;</a>
-    <h1>Log In</h1>
-    <h2>Admin</h2>
-
-    <div class="input-group">
-      <label for="email">Email</label>
-      <input type="text" name="email" id="email" placeholder="Enter Admin Email" required />
+  <div class="error-popup-overlay" id="errorOverlay" role="dialog" aria-modal="true">
+    <div class="error-popup" role="alert" aria-labelledby="errorTitle">
+      <button class="close-btn" id="errorClose" aria-label="Close">&times;</button>
+      <h3 id="errorTitle">Error</h3>
+      <p><%= error %></p>
     </div>
+  </div>
+  <% } %>
 
-    <div class="input-group">
-      <label for="pass">Password</label>
-      <input type="password" name="pass" id="pass" placeholder="Enter Password" required />
-    </div>
+  <div class="container">
+    <form class="login-card" id="adminLoginForm" action="/admin/adminlogin" method="POST" novalidate>
+      <a href="/home" class="back">&lArr;</a>
+      
+      <div class="header-content">
+        <div class="logo-icon">♻️</div> 
+        <p class="header-title">Waste-Management System</p>
+        <div class="page-heading">Admin Login</div>
+      </div>
 
-    <button type="submit" class="login-btn" name="submit">Submit</button>
-  </form>
-</div>
+
+      <div class="input-group">
+        <label for="email">Email Address</label>
+        <input type="email" name="email" id="email" placeholder="your.email@example.com" />
+        <div id="emailError" class="error-message"></div>
+      </div>
+
+      <div class="input-group">
+        <label for="pass">Password</label>
+        <div class="input-field-wrapper">
+            <input type="password" name="pass" id="pass" placeholder="Enter your password" required />
+            <span class="toggle-password" id="togglePass">👁️</span> 
+        </div>
+        <div id="passError" class="error-message"></div>
+      </div>
+
+  <button type="submit" class="login-btn" name="submit">Login</button>
+    </form>
+  </div>
 
 <script>
   class AdminLoginValidator {
@@ -137,34 +313,89 @@
       this.form = document.getElementById(formId);
       this.emailInput = document.getElementById('email');
       this.passInput = document.getElementById('pass');
+      this.togglePass = document.getElementById('togglePass');
       this.attachEvents();
     }
 
     attachEvents() {
       if (!this.form) return;
       this.form.addEventListener('submit', (e) => this.validateForm(e));
+      // Added event for password visibility toggle
+      this.togglePass.addEventListener('click', () => this.togglePasswordVisibility());
+    }
+
+    togglePasswordVisibility() {
+        const type = this.passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        this.passInput.setAttribute('type', type);
+        this.togglePass.textContent = type === 'password' ? '👁️' : '🙈'; // Change icon based on state
     }
 
     validateForm(e) {
       const email = this.emailInput.value.trim();
       const pass = this.passInput.value.trim();
-      let errors = [];
+      let hasErrors = false;
+
+      // Reset previous errors
+      this.resetErrors();
 
       // ✅ Email validation
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        errors.push("Please enter a valid email address.");
+      if (!email) {
+        this.showError('email', 'Email is required');
+        hasErrors = true;
+      } else {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          this.showError('email', 'Please enter a valid email address (e.g., example@domain.com)');
+          hasErrors = true;
+        }
       }
 
-      if (errors.length > 0) {
-        e.preventDefault();
-        alert(errors.join("\n"));
+      // ✅ Password validation
+      if (!pass) {
+        this.showError('pass', 'Password is required');
+        hasErrors = true;
       }
+
+      if (hasErrors) {
+        e.preventDefault();
+      }
+    }
+
+    showError(field, message) {
+      const input = document.getElementById(field);
+      const errorDiv = document.getElementById(field + 'Error');
+      if (input && errorDiv) {
+        input.classList.add('input-error');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    resetErrors() {
+      ['email', 'pass'].forEach(field => {
+        const input = document.getElementById(field);
+        const errorDiv = document.getElementById(field + 'Error');
+        if (input && errorDiv) {
+          input.classList.remove('input-error');
+          errorDiv.style.display = 'none';
+          errorDiv.textContent = '';
+        }
+      });
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     new AdminLoginValidator('adminLoginForm');
+
+    // Error modal handling: allow closing via button, click outside, or Escape key
+    const overlay = document.getElementById('errorOverlay');
+    if (overlay) {
+      const closeBtn = document.getElementById('errorClose');
+      const closeError = () => overlay.remove();
+      if (closeBtn) closeBtn.addEventListener('click', closeError);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeError(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeError(); });
+    }
   });
 </script>
 
