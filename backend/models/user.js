@@ -40,52 +40,94 @@ export default class User {
                 const params = [email, name, contact, profilepic, workerId];
                 return await Database.update(sql, params);
     }
+ async addUser(name, email, password, role, contactInfo, extra = {}) {
+  try {
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 🔍 Check for duplicates before inserting
+    if (role === "Member") {
+      const checkDuplicate = `
+        SELECT m.Member_ID 
+        FROM Member m
+        JOIN User u ON m.Member_ID = u.User_ID
+        WHERE m.HouseNumber = ? OR u.ContactInfo = ?
+      `;
+      const duplicates = await Database.query(checkDuplicate, [
+        extra.houseNumber,
+        contactInfo,
+      ]);
 
-async addUser(name, email, password, role, contactInfo, extra = {}) {
-    try {
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-        
-        // Insert into User table
-        const sqlUser = `INSERT INTO User (Name, Email, Password, ContactInfo, Role) 
-                         VALUES (?, ?, ?, ?, ?)`;
-        const paramsUser = [name, email, hashedPassword, contactInfo, role];
-        const userId = await Database.insert(sqlUser, paramsUser);
-
-        console.log(`Added ${role} user with ID:`, userId);
-
-        // Insert into role-specific tables
-        if (role === "Member") {
-            const wardNumber = extra?.wardNumber || null;
-            const houseNumber = extra?.houseNumber || null;
-            const sqlMember = `INSERT INTO Member (Member_ID, HouseNumber, WardNumber) 
-                               VALUES (?, ?, ?)`;
-            const paramsMember = [userId, houseNumber, wardNumber];
-            console.log("Inserting Member:", paramsMember);
-            await Database.insert(sqlMember, paramsMember);
-        }
-
-        if (role === "Worker") {
-            const wardNumber = extra?.wardNumber || null;
-            const sqlWorker = `INSERT INTO Worker (Worker_ID, WardNumber, taskAssigned) 
-                               VALUES (?, ?, ?)`;
-            const paramsWorker = [userId, wardNumber, "no"];
-            console.log("Inserting Worker:", paramsWorker);
-            await Database.insert(sqlWorker, paramsWorker);
-        }
-
-        return userId;
-    } catch (err) {
-        console.error("Error adding user:", err);
-        throw err;
+      if (duplicates.length > 0) {
+        throw new Error("House number or contact info already exists for another member.");
+      }
+    } else if (role === "Worker") {
+      const checkDuplicate = `
+        SELECT u.User_ID 
+        FROM User u
+        WHERE u.ContactInfo = ?
+      `;
+      const duplicates = await Database.query(checkDuplicate, [contactInfo]);
+      if (duplicates.length > 0) {
+        throw new Error("Contact info already exists for another worker.");
+      }
     }
+
+    // ✅ Insert into User table
+    const sqlUser = `
+      INSERT INTO User (Name, Email, Password, ContactInfo, Role)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const paramsUser = [name, email, hashedPassword, contactInfo, role];
+    const userId = await Database.insert(sqlUser, paramsUser);
+
+    console.log(`✅ Added ${role} user with ID:`, userId);
+
+    // ✅ Insert into role-specific tables
+    if (role === "Member") {
+      const wardNumber = extra?.wardNumber || null;
+      const houseNumber = extra?.houseNumber || null;
+
+      try {
+        const sqlMember = `
+          INSERT INTO Member (Member_ID, HouseNumber, WardNumber)
+          VALUES (?, ?, ?)
+        `;
+        const paramsMember = [userId, houseNumber, wardNumber];
+        await Database.insert(sqlMember, paramsMember);
+      } catch (err) {
+        // Rollback user record
+        await Database.delete(`DELETE FROM User WHERE User_ID = ?`, [userId]);
+        throw new Error("Failed to add member. The house number might already exist.");
+      }
+    }
+
+    if (role === "Worker") {
+      const wardNumber = extra?.wardNumber || null;
+      try {
+        const sqlWorker = `
+          INSERT INTO Worker (Worker_ID, WardNumber, taskAssigned)
+          VALUES (?, ?, ?)
+        `;
+        const paramsWorker = [userId, wardNumber, "no"];
+        await Database.insert(sqlWorker, paramsWorker);
+      } catch (err) {
+        // Rollback user record
+        await Database.delete(`DELETE FROM User WHERE User_ID = ?`, [userId]);
+        throw new Error("Failed to add worker. Contact info may already exist.");
+      }
+    }
+
+    return userId;
+  } catch (err) {
+    // ❌ Send the actual message to be handled by controller
+    throw new Error(err.message || "Error adding user.");
+  }
 }
 
 
-
-    // ➤ Delete a user
-   async deleteUser(userId) {
+// ➤ Delete a user
+async deleteUser(userId) {
 
     const sqlRole = `SELECT Role FROM User WHERE User_ID = ?`;
     const rows = await Database.query(sqlRole, [userId]);

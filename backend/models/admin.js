@@ -9,6 +9,14 @@ export default class Admin {
         this.email = email;
         this.password = password;  // in real project, hash this
     }
+  
+        // Find an admin by AdminID
+    static async findByAdminId(adminId) {
+        const sql = 'SELECT * FROM admin WHERE Admin_ID = ?';
+        const rows = await Database.query(sql, [adminId]);
+        return rows[0];
+    }
+
 
     // Find an admin by AdminID
     static async findByEmail(email) {
@@ -97,7 +105,18 @@ async addUser(name, email, password, role, contactInfo, extra = {}) {
 
     // ➤ View all users
     async viewUsers() {
-        const sql = `SELECT User_ID, Name, Email, Role FROM User`;
+        const sql = `SELECT 
+    u.User_ID,
+    u.Name,
+    u.Email,
+    u.Role,
+    COALESCE(m.HouseNumber, NULL) AS HouseNumber,
+    COALESCE(m.WardNumber, w.WardNumber) AS WardNumber,
+    u.ProfilePicture
+FROM User u
+LEFT JOIN Member m ON u.User_ID = m.Member_ID
+LEFT JOIN Worker w ON u.User_ID = w.Worker_ID;
+`;
         return await Database.fetchAll(sql);
     }
 

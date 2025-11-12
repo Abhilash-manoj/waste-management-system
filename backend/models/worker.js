@@ -8,6 +8,26 @@ export default class Worker extends User {
         super(id, name, email, password, profilePicture, "Worker");
         this.taskCount = taskCount;
     }
+  
+       static async findByWorkerId(workerId) {
+    const sql = `
+        SELECT 
+            u.User_ID,
+            u.Name,
+            u.Email,
+            u.Password,
+            u.ContactInfo,
+            u.Role,
+            w.Worker_ID,
+            w.WardNumber
+        FROM Worker AS w
+        INNER JOIN User AS u ON w.Worker_ID = u.User_ID
+        WHERE w.Worker_ID = ?
+    `;
+    const rows = await Database.query(sql, [workerId]);
+    return rows[0];
+}
+
 
     // Find a worker by email
    static async findByEmail(email) {

@@ -46,7 +46,6 @@ app.use("/admin", loadUsers);
 
 
 app.get("/home", (req, res) => {
-  console.log("🔥 /home route hit");
   res.render("home");
 });
 

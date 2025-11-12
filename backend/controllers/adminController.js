@@ -90,23 +90,29 @@ class AdminController {
   }
 
 
- // ➤ Add New User
-  async addUser(req, res) {
-    try {
-      const { name, email, password, role, contactInfo, extra } = req.body;
-      const user = new User();
-      const userId = await user.addUser(name, email, password, role, contactInfo, extra);
+// ➤ Add New User
+async addUser(req, res) {
+  try {
+    const { name, email, password, role, contactInfo, extra } = req.body;
+    const user = new User();
+    const userId = await user.addUser(name, email, password, role, contactInfo, extra);
 
-      res.json({
-        success: true,
-        message: `${role} added successfully.`,
-        userId,
-      });
-    } catch (err) {
-      console.error("❌ Error adding user:", err);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
+    res.json({
+      success: true,
+      message: `${role} added successfully.`,
+      userId,
+    });
+  } catch (err) {
+    console.error("❌ Error adding user:", err.message);
+
+    // ✅ Send specific message from the model instead of generic "Internal Server Error"
+    res.status(400).json({
+      success: false,
+      message: err.message || "Failed to add user.",
+    });
   }
+}
+
 
  // ➤ Delete User
   async deleteUser(req, res) {
