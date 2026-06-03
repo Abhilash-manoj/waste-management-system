@@ -73,7 +73,7 @@ export default class User {
       }
     }
 
-    // ✅ Insert into User table
+    
     const sqlUser = `
       INSERT INTO User (Name, Email, Password, ContactInfo, Role)
       VALUES (?, ?, ?, ?, ?)

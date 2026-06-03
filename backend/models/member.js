@@ -64,9 +64,12 @@ export default class Member extends User {
         return Database.insert(sqlRequest, paramsRequest);
     }
 
-    deleteWasteRequest(requestId) {
-        console.log(`Member ${this.name} deleted request ${requestId}`);
+        deleteWasteRequest(Request_ID) {
+        const sqlDelete = `DELETE FROM wasterequest WHERE Request_ID = ?`;
+        const paramsDelete = [Request_ID];
+        return Database.delete(sqlDelete, paramsDelete);
     }
+
 
     viewPendingTasks() {
         console.log("Show pending tasks for member.");

@@ -507,8 +507,12 @@ async function addUser(e, role) {
     const ward = document.getElementById("worker-ward").value.trim();
     const phone = document.getElementById("worker-phone").value.trim();
 
+
     if (!name) {
-      showError("worker-name", "Name is required");
+      showError("member-name", "Name is required");
+      isValid = false;
+    }else if (!name.match(/^[A-Za-z\s]+$/)) {
+      showError("member-name", "Name must contain only letters and spaces");
       isValid = false;
     }
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -545,6 +549,9 @@ async function addUser(e, role) {
 
     if (!name) {
       showError("member-name", "Name is required");
+      isValid = false;
+    }else if (!name.match(/^[A-Za-z\s]+$/)) {
+      showError("member-name", "Name must contain only letters and spaces");
       isValid = false;
     }
     if (!house.match(/^[A-Za-z0-9\-\/]+$/)) {

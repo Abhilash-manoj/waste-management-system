@@ -95,7 +95,14 @@ async addUser(req, res) {
   try {
     const { name, email, password, role, contactInfo, extra } = req.body;
     const user = new User();
-    const userId = await user.addUser(name, email, password, role, contactInfo, extra);
+     const userId = await user.addUser(
+      name,
+      email || null,
+      password,
+      role,
+      contactInfo || null,
+      extra || {} 
+    );
 
     res.json({
       success: true,

@@ -77,6 +77,10 @@ router.post(
   (req, res) => memberController.submitWasteRequest(req, res)
 );
 
+// Delete waste Request
+router.delete("/deleterequest/:id", (req, res) => memberController.deleteWasteRequest(req, res));
+
+
 // ✅ View waste requests
 router.get("/viewrequests", (req, res) => memberController.viewRequests(req, res));
 

@@ -26,10 +26,6 @@ class MemberController {
   async login(req, res) {
   const { housenumber, wardnumber, pass } = req.body;
 
-  if (!this.validateInput(housenumber, wardnumber, pass)) {
-    return res.render('memberLogin', { error: 'Invalid input format.' });
-  }
-
   try {
     const member = await this.memberModel.findByHouseNumber(housenumber);
 
@@ -114,6 +110,56 @@ class MemberController {
       res.status(500).json({ success: false, message: "Error submitting request. Try again." });
     }
   }
+
+  // Delete a waste collection request
+async deleteWasteRequest(req, res) {
+  const { id } = req.params;
+  console.log("📩 Hit deleteWasteRequest route, ID:", id);
+
+  try {
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Request ID is missing.",
+      });
+    }
+
+    const sessionMember = req.session?.member;
+
+    const member = new Member(
+      sessionMember?.id || 1,
+      sessionMember?.name || "SuperAdmin",
+      sessionMember?.email || "admin@example.com",
+      "hashedPass",
+      null,
+      sessionMember?.houseNumber,
+      sessionMember?.wardNumber
+    );
+
+    // Call the method in the Member class to delete the request
+    const deleted = await member.deleteWasteRequest(id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found or already deleted.",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Request ${id} deleted successfully.`,
+      requestId: id,
+    });
+  } catch (err) {
+    console.error("❌ Error deleting request:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting request. Try again.",
+    });
+  }
+}
+
 
    async viewRequests(req, res) {
         try {

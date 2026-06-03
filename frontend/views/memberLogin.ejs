@@ -285,6 +285,9 @@
         if (!house) {
           this.showError('housenumber', 'House Number is required');
           hasErrors = true;
+        }else if (!/^\d+$/.test(house)) {
+          this.showError('housenumber', 'House Number must be numeric');
+          hasErrors = true;
         }
 
         if (!ward) {

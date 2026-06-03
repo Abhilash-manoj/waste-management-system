@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # 1. Your Node.js Backend
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=wastemanagement123
+      - DB_NAME=waste_management_system
+    volumes:
+      - .:/usr/src                # Mounts your entire project root into the container
+      - /usr/src/backend/node_modules # Anonymous volume: Protects the container's installed packages
+    depends_on:
+      - db # Makes sure MySQL starts before your backend tries to connect
+
+  # 2. Your New MySQL Database
+  db:
+    image: mysql:5.7
+    restart: always
+    command: --lower_case_table_names=1 --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
+    ports:
+      - "3306:3306" # Maps MySQL port to your computer so you can connect via tools like Workbench
+    environment:
+      MYSQL_ROOT_PASSWORD: wastemanagement123
+      MYSQL_DATABASE: waste_management_system # Automatically creates your database on startup
+    volumes:
+     - mysql_data:/var/lib/mysql
+     - ./db-init:/docker-entrypoint-initdb.d
+
+# 3. Define the persistent volume
+volumes:
+  mysql_data:
